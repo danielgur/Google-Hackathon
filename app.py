@@ -1,11 +1,18 @@
-import os
 from flask import Flask
 
+import os
+import twilio.twiml
+
 app = Flask(__name__)
+app.debug = True
 
 @app.route('/')
 def hello():
-    return 'Hello World!'
+    resp = twilio.twiml.Response()
+    body = resp.get('Body', None)
+    resp.sms("Hello, Mobile Monkey.. you just sent: " + body)
+    return str(resp)
+
 
 if __name__ == '__main__':
     # Bind to PORT if defined, otherwise default to 5000.
