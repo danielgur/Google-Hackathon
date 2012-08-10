@@ -9,7 +9,7 @@ app.debug = True
 @app.route('/')
 def hello():
     resp = twilio.twiml.Response()
-    body = request.values.get('Body', None)
+    body = request.values.get('Body', '')
     resp.sms("Hello, Mobile Monkey.. you just sent: " + body)
     return str(resp)
 
