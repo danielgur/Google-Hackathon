@@ -6,11 +6,13 @@ import twilio.twiml
 app = Flask(__name__)
 app.debug = True
 
-@app.route('/')
+@app.route('/', methods=['GET', 'POST'])
 def hello():
-    resp = twilio.twiml.Response()
     body = request.values.get('Body', '')
-    resp.sms("Hello, Mobile Monkey.. you just sent: " + body)
+    resp = twilio.twiml.Response()
+    message = "Hello, Mobile Monkey.. you just sent: " + body
+    resp.sms(message)
+
     return str(resp)
 
 
