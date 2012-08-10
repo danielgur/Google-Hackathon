@@ -1,4 +1,4 @@
-from flask import Flask
+from flask import Flask, request
 
 import os
 import twilio.twiml
@@ -9,7 +9,7 @@ app.debug = True
 @app.route('/')
 def hello():
     resp = twilio.twiml.Response()
-    body = resp.get('Body', None)
+    body = request.values.get('Body', None)
     resp.sms("Hello, Mobile Monkey.. you just sent: " + body)
     return str(resp)
 
