@@ -11,7 +11,7 @@ def hello():
     resp = twilio.twiml.Response()
     body = request.values.get('Body', '')
     resp.sms("Hello, Mobile Monkey.. you just sent: " + body)
-    return str(resp)
+    return str(resp
 
 
 if __name__ == '__main__':
