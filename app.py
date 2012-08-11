@@ -45,7 +45,7 @@ def receiveSMS():
     sender_number = int(request.values.get('From', ''))
 
     # If user died, make necessary updates
-"""    if text_received.strip().lower() == 'dead':
+    """if text_received.strip().lower() == 'dead':
         dead_user = Users[sender_number]
         updateTarget(dead_user)
         
