@@ -119,7 +119,7 @@ def poststartgame():
         Users[number] = user
 
     users_list = list(Users.values())
-    for user in users_list:
+    for user in users_list[:]:
         try:
             sendSMS(user.number,
                    "Get ready. It's about to get real. Your target will be sent shortly.")
