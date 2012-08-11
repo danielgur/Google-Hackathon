@@ -80,6 +80,10 @@ def poststartgame():
 
     return 'ok'
 
+@app.route('/dashboard', methods=['GET'])
+def dashboard():
+    return render_template('status.html', **{'Users': Users})
+
 @app.route('/gamestatus', methods=['GET'])
 def gamestatus():
     return json.dumps([user.serialize() 
