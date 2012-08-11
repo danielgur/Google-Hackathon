@@ -21,9 +21,9 @@ def receiveSMS():
     resp = twilio.twiml.Response()
     message = "You've been removed from the game.. sucker."
     resp.sms(message)
-    user = request.values.get('From', '')
-    print user
-    del Users[user]
+    user_phone_num = request.values.get('From', '')
+    print user_phone_num
+    del Users[int(user_phone_num)]
     return str(resp)
 
 def sendSMS(phone_num, text):
