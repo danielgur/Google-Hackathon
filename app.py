@@ -13,7 +13,23 @@ client = TwilioRestClient()
 app = Flask(__name__)
 app.debug = True
 
-Users = {}
+Users = { 
+    17144175062: User(**{
+            "target_number": 12169705010,
+            "number": 17144175062,
+            "name": "Huan"
+            }),
+    12169705010: User(**{
+            "target_number": 12165482911,
+            "number": 12169705010,
+            "name": "daniel lior gur"
+            }),
+    12165482911: User(**{
+            "target_number": 17144175062,
+            "number": 12165482911,
+            "name": "Elissa"
+            })
+    }
 
 @app.route('/', methods=['GET', 'POST'])
 def receiveSMS():
