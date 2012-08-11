@@ -40,10 +40,10 @@ def receiveSMS():
     sender_number = request.values.get('From', '')
 
     if text_received.strip().lower() == 'dead':
-        message = "you've been removed from the game.. sucker."
-        sendSMS(sender_number, message)
         updateTarget(Users[int(sender_number)])
         del Users[int(sender_number)]
+        message = "you've been removed from the game.. sucker."
+        sendSMS(sender_number, message)
     else:
         sendSMS(sender_number, "the fuck broah. follow the rules")
 
