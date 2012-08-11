@@ -3,6 +3,10 @@ from flask import Flask, request
 import os
 import twilio.twiml
 
+from twilio.rest import TwilioRestClient
+
+client = TwilioRestClient()
+
 app = Flask(__name__)
 app.debug = True
 
@@ -15,6 +19,9 @@ def hello():
 
     return str(resp)
 
+def sendSMS(phone_num, text):
+    message = client.sms.messages.create(to=phone_num, from_="+14155992671",
+                                     body=text)
 
 if __name__ == '__main__':
     # Bind to PORT if defined, otherwise default to 5000.
