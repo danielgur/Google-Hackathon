@@ -122,6 +122,7 @@ def poststartgame():
         except: 
             logging.warn("Catching exception for " + str(user.number) + " bout to delete...")
             del Users[user.number]
+            user_list.remove(user)
    
     random.shuffle(users_list)
     for i, user in enumerate(users_list):
