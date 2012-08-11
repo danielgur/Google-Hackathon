@@ -67,7 +67,7 @@
 						 setInterval(function(){
 								 get(function(data){
 										 new_users = JSON.parse(data);
-										 if (new_users.length < users.length){
+										 if (new_users.length < users.length && new_users.length > 2){
 											 console.log(users);
 											 console.log(new_users);
 

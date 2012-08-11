@@ -14,7 +14,8 @@ import os
 import random
 import twilio.twiml
 
-from flask import Flask, request, render_template, redirect
+from flask import Flask, request, render_template, redirect, url_for
+from flask import send_from_directory
 from User import User
 from twilio.rest import TwilioRestClient
 
@@ -23,6 +24,11 @@ client = TwilioRestClient()
 app = Flask(__name__)
 app.debug = True
 
+
+@app.route('/favicon.ico')
+def favicon():
+    return send_from_directory(os.path.join(app.root_path, 'static'),
+                               'favicon.ico', mimetype='image/vnd.microsoft.icon')
 Users = {}
 
 UsersKilled = {}
@@ -111,6 +117,7 @@ def receiveSMS():
             if len(Users.keys()) > 2:
                 sendSMS(killer.number, getPartialCongrats() + "Your new target is: " + killer.target_name)
             else:
+                Users = {}
                 winners = ''
                 for user in Users.values():
                     sendSMS(user.number, "You freakin WON! Now you have the flower powers.")
@@ -154,45 +161,6 @@ def sendSMS(phone_num, text):
 
 def gaming():
     return bool(Users)
-
-
-@app.route('/fake', methods=['GET'])
-def fake():
-    # this is just to initialize fake users,
-    # so we can test without texting
-    global Users
-    global ShuffledUsers
-    Users = {
-        17144175062: User(**{
-                "target_name": "daniel gur",
-                "target_number": 12169705010,
-                "number": 17144175062,
-                "name": "Huan",
-                "secret_word": "scale"
-                }),
-        12169705010: User(**{
-                "target_name": "Elissa",
-                "target_number": 12165482911,
-                "number": 12169705010,
-                "name": "daniel gur",
-                "secret_word": "robust"
-                }),
-        12165482911: User(**{
-                "target_name": "Huan",
-                "target_number": 17144175062,
-                "number": 12165482911,
-                "name": "Elissa",
-                "secret_word": "dynamic"
-                }),
-        14822887950: User(**{
-                "target_name": "Huan #2",
-                "target_number": 12165482911,
-                "number": 14822887950,
-                "name": "daniel diaz"
-                }),
-        }
-    ShuffledUsers = Users.values()
-    return redirect('/')
 
 
 @app.route('/', methods=['GET'])
