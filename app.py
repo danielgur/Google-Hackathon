@@ -23,32 +23,8 @@ client = TwilioRestClient()
 app = Flask(__name__)
 app.debug = True
 
-Users = { 
-    17144175062: User(**{
-            "target_name": "daniel gur",
-            "target_number": 12169705010,
-            "number": 17144175062,
-            "name": "Huan"
-            }),
-    12169705010: User(**{
-            "target_name": "Elissa",
-            "target_number": 12165482911,
-            "number": 12169705010,
-            "name": "daniel gur"
-            }),
-    12165482911: User(**{
-            "target_name": "Huan",
-            "target_number": 17144175062,
-            "number": 12165482911,
-            "name": "Elissa"
-            }),
-    14822887950: User(**{
-            "target_name": "Huan #2",
-            "target_number": 12165482911,
-            "number": 14822887950,
-            "name": "daniel diaz"
-            }),
-   }
+Users = {}
+
 UsersKilled = {}
 
 @app.route('/kill', methods=['GET', 'POST'])
@@ -96,12 +72,52 @@ def sendSMS(phone_num, text):
             from_, phone_num,  text))
             
     message = client.sms.messages.create(to=phone_num, from_=from_,
-                                     body=text)
+                                         body=text)
     return message
 
+def gaming():
+    return bool(Users)
+
+@app.route('/fake', methods=['GET'])
+def fake():
+    # this is just to initialize fake users,
+    # so we can test without texting
+    global Users
+    Users = {
+        17144175062: User(**{
+                "target_name": "daniel gur",
+                "target_number": 12169705010,
+                "number": 17144175062,
+                "name": "Huan"
+                }),
+        12169705010: User(**{
+                "target_name": "Elissa",
+                "target_number": 12165482911,
+                "number": 12169705010,
+                "name": "daniel gur"
+                }),
+        12165482911: User(**{
+                "target_name": "Huan",
+                "target_number": 17144175062,
+            "number": 12165482911,
+                "name": "Elissa"
+                }),
+        14822887950: User(**{
+                "target_name": "Huan #2",
+                "target_number": 12165482911,
+                "number": 14822887950,
+                "name": "daniel diaz"
+                }),
+        }
+    return 'ok'
+
+
 @app.route('/', methods=['GET'])
-def getstartgame():
-    return render_template('form.html')
+def index():
+    if not gaming():
+        return render_template('form.html')
+    else:
+        return render_template('dashboard.html')
 
 @app.route('/startgame', methods=['POST'])
 def poststartgame():
@@ -140,10 +156,6 @@ def poststartgame():
 
     return 'ok'
 
-@app.route('/dashboard', methods=['GET'])
-def dashboard():
-    return render_template('status.html', **{'Users': 
-                                             [ user.serialize() for user in Users.values() ]})
 
 @app.route('/gamestatus', methods=['GET'])
 def gamestatus():

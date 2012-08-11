@@ -1,0 +1,148 @@
+<html>
+    <head><title>Status the game</title>
+	  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+	  <script src="https://raw.github.com/DmitryBaranovskiy/raphael/master/raphael-min.js"></script>
+	 <script>
+	 var users = {};
+	 $(document).ready(function(){
+	         document.bgColor = "#333";
+			 var paper_width = 700;
+			 var paper_height = 700;
+			 var paper = Raphael("holder", paper_width, paper_height);
+			 var circles = paper.set();
+			 var labels = paper.set();
+
+			 var get = function(cb){
+				 $.get('/gamestatus', cb);
+			 }
+
+			 var init = function(){
+				 var circle_radius = 70;
+				 get(function(data){
+						 users = JSON.parse(data);
+						 console.log(users);
+						 users = users;
+						 for(var i = 0; i < users.length; i++){
+							 var user = users[i];
+							 var circle = paper.circle(Math.random() * paper_width,
+													   Math.random() * paper_height,
+													   circle_radius);
+							 var label = paper.text(Math.random() * paper_width,
+													Math.random() * paper_height,
+													user.name);
+							 circles.push(circle);
+							 labels.push(label);
+							 user.circle = circle;
+							 user.label = label;
+						 }
+						 // arrows.attr({fill: "red", stroke: "#fff", "stroke-dasharray": "- ", opacity: .2});
+						 circles.attr({fill: "#000", stroke: "#fff", "stroke-dasharray": "- ", opacity: .2});
+						 labels.attr({font: "12px Fontin-Sans, Arial", fill: "#fff", "text-anchor": "start"});
+						 update();
+					 });
+			 };
+
+			 var update = function(){
+				 // user is assumed to be just updated with ordered list of kill
+				 // all died users are destoryed before this function
+				 destory_arrows();
+				 var x_origin = paper_width / 2;
+				 var y_origin = paper_height / 2;
+				 var length = users.length;
+				 var radius = 250;
+				 for(var i = 0; i < length; i++){
+					 var user = users[i];
+					 var x_offset = radius * Math.cos(i * 2 * Math.PI / length);
+					 var y_offset = radius * Math.sin(i * 2 * Math.PI / length);
+					 var x_user_center = x_origin + x_offset;
+					 var y_user_center = y_origin + y_offset;
+					 var label_params = {x: x_user_center-20, y: y_user_center-20};
+					 var circle_params = {cx: x_user_center, cy: y_user_center};
+					 user.circle.animate(circle_params, 3 * 1000);
+					 user.label.animate(label_params, 3 * 1000);
+					 setTimeout(function(){
+							 for(var i = 0; i < length; i++){
+								 var x_arrow_offset = radius * Math.cos((i+.5) * 2 * Math.PI / length) * .95;
+								 var y_arrow_offset = radius * Math.sin((i+.5) * 2 * Math.PI / length) * .95;
+								 var x_arrow_center = x_origin + x_arrow_offset;
+								 var y_arrow_center = y_origin + y_arrow_offset;
+								 var x_arrow_vect = radius * Math.cos((i+1) * 2 * Math.PI / length) * .9 - radius * Math.cos((i) * 2 * Math.PI / length) * .9;
+								 var y_arrow_vect = radius * Math.sin((i+1) * 2 * Math.PI / length) * .9 - radius * Math.sin((i) * 2 * Math.PI / length) * .9;
+								 var arrow = paper.arrow(x_arrow_center, y_arrow_center, x_arrow_vect, y_arrow_vect);
+								 arrows.push(arrow);
+								 var arrow_params = {opacity: 1};
+								 arrow.animate(arrow_params, 3 * 1000);
+							 }
+							 arrows.attr({fill: "red", stroke: "#fff", "stroke-dasharray": "- ", opacity: .2}); 
+						 }, 3 * 1000);
+				 }
+			 };
+			 
+			 var destory_arrows = function(){
+				 for(var i = 0; i < length; i++){
+					 var arrow = arrows[i];
+					 arrow.remove();
+				 }
+				 arrows = paper.set();
+			 };
+
+
+			 // vector that the arrow the towards
+			 Raphael.fn.arrow = function (x, y, x_vect, y_vect){
+				 var width = 30;
+				 var length = 70;
+				 var arrow_dist = 20;
+				 var commands = [ "M" + x + " " + (y + length/2),
+								  "L" + (x + width/2) + " " + (y + length/2),
+								  "L" + (x + width/2) + " " + (y - arrow_dist),
+								  "L" + ((x + width/2) + 10) + " " + (y - arrow_dist),
+								  "L" + x + " " + (y - length),
+								  "L" + ((x - width/2) - 10) + " " + (y - arrow_dist),
+								  "L" + (x - width/2) + " " + (y - arrow_dist),
+								  "L" + (x - width/2) + " " + (y + length/2),
+								  "L" + x + " " + (y + length/2)
+								  ]
+				 var command = "";
+				 for(var i = 0; i < commands.length; i++){
+					 command += commands[i];
+				 }
+				 var path = this.path(command);
+				 var rotation = (180 / Math.PI) * Math.acos(x_vect / Math.sqrt(x_vect * x_vect + y_vect * y_vect));
+				 if( y_vect > 0 ){
+					 
+				 } else {
+					 rotation = 360 - rotation;
+				 }
+				 rotation += 90;
+				 path.rotate(rotation);
+
+				 return path;
+
+			 }
+
+			 
+
+
+			 function destory(el, cb){
+				 var final_state = {opacity: 0};
+				 el.animate(final_state, 1 * 1000, "<", cb);					 
+			 }
+			 
+			 init();
+			 //setInterval(function(){
+			 //  update();
+			 //}, 1000); 
+
+		    //updateDrawing();
+		 });
+	  </script>
+
+
+
+</head>
+    <body>
+		  <center>
+		     <div id="holder"></div>
+     	 </center>
+   </body>
+</html>
