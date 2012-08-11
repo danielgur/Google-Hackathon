@@ -120,7 +120,7 @@ def poststartgame():
             sendSMS(user.number,
                    "Get ready. It's about to get real. Your target will be sent shortly.")
         except: 
-            logging.warn("Catching exception for " + user.number + " bout to delete...")
+            logging.warn("Catching exception for " + str(user.number) + " bout to delete...")
             del Users[user.number]
    
     random.shuffle(users_list)
