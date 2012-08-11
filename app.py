@@ -61,6 +61,9 @@ def receiveSMS():
 
     # End game if there are two or less users
     if len(Users) <= 2:
+      global Users
+      Users = {}
+
       winners = ''
       for user in Users.values():
         sendSMS(user.number, "You freakin WON! Now you have the flower powers.")
