@@ -20,8 +20,6 @@
 			 var init = function(){
 				 var circle_radius = 70;
 				 get(function(data){
-						 users = JSON.parse(data);
-						 console.log(users);
 						 users = users;
 						 for(var i = 0; i < users.length; i++){
 							 var user = users[i];
@@ -67,8 +65,13 @@
 
 						 setInterval(function(){
 								 get(function(data){
+										 users = JSON.parse(data);
+										 console.log(users);
 										 var new_users = JSON.parse(data);
 										 if (new_users.length < users.length){
+											 console.log(user);
+											 console.log(new_user);
+
 											 // look at old users and delete the ones
 											 // that are not in new_users
 											 for(var i; i < users.length; i++){
