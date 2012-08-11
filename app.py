@@ -40,14 +40,17 @@ def poststartgame():
     global Users
     Users = {}
     for line in data.split('\n'):
-        name, number = line.split(',')
+        line = line.strip()
+        if not line:
+            continue
+        number, name = line.split(',')
         name, number = name.strip(), number.strip()
         user = User(name=name, number=number)
         Users[number] = user
 
     users_list = list(Users.values())
     for i, user in enumerate(users_list):
-        user.targetid = users_list[ (i + 1) % len(users_list)].id
+        user.target_number = users_list[ (i + 1) % len(users_list)].number
 
     return 'ok'
 
