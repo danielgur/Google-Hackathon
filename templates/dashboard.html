@@ -18,10 +18,11 @@
 			 }
 
 			 var init = function(){
+				 console.log('init');
 				 var circle_radius = 70;
 				 get(function(data){
-						 users = users;
-						 for(var i = 0; i < users.length; i++){
+	                     users = JSON.parse(data);
+		 				 for(var i = 0; i < users.length; i++){
 							 var user = users[i];
 							 var circle = paper.circle(Math.random() * paper_width,
 													   Math.random() * paper_height,
@@ -65,26 +66,24 @@
 
 						 setInterval(function(){
 								 get(function(data){
-										 users = JSON.parse(data);
-										 console.log(users);
-										 var new_users = JSON.parse(data);
+										 new_users = JSON.parse(data);
 										 if (new_users.length < users.length){
-											 console.log(user);
-											 console.log(new_user);
+											 console.log(users);
+											 console.log(new_users);
 
 											 // look at old users and delete the ones
 											 // that are not in new_users
-											 for(var i; i < users.length; i++){
+											 for(var i = 0; i < users.length; i++){
 												 var user = users[i];
 												 var alive = false;
-												 for(var j; j < new_users.length; j++){
+												 for(var j = 0; j < new_users.length; j++){
 													 var new_user = new_users[i];
 													 if (user.number == new_user.number){
 														 alive = true;
 													 }
 												 }
 												 if (!alive){
-													 var dead_user = users.splice(i, 1);
+													 var dead_user = users.splice(i, 1)[0];
 													 destory_user(dead_user);
 													 break;
 												 }

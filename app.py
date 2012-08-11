@@ -34,16 +34,51 @@ Words = {"blue": False,
          "scalable": False,
          "dynamic": False,
          "red": False,
-         "spector": False}
+         "amigo": False,
+         "respect": False,
+         "alfred": False,
+         "beast": False,
+         "welissa": False,
+         "yoyo": False,
+         "quique": False,
+         "trivial": False,
+         "regina": False,
+         "sad": False,
+         "day": False,
+         "pedrophile": False,
+         "insanity": False,
+         "dig": False,
+         "hendo": False,
+         "boy": False,
+         "bru": False,
+         "shelton": False,
+         "harvey": False,
+         "g4lint": False,
+         "omg": False,
+         "potter": False,
+         "harry": False,
+         "dumbledore": False,
+         "gatsby": False,
+         "google": False,
+         "bigtable": False,
+         "megastore": False,
+         "git": False,
+         "sweet": False,
+         "cheese": False,
+         "gouda": False,
+         "ferr": False,
+         "china": False}
 
 @app.route('/kill/', methods=['GET', 'POST'])
 def receiveSMS():
+    global Users
     # Get info of received SMS
-    text_received = request.values.get('Body', '')
+    # text_received = request.values.get('Body', '')
+    word = request.values.get('Body', '').strip().lower()
     sender_number = int(request.values.get('From', ''))
 
     # If user died, make necessary updates
-    if text_received.strip().lower() == 'dead':
+    """if text_received.strip().lower() == 'dead':
         dead_user = Users[sender_number]
         updateTarget(dead_user)
         
@@ -55,25 +90,37 @@ def receiveSMS():
             if suser.number == dead_user.number:
 	            del ShuffledUsers[i]
         message = "you've been removed from the game.. sucker."
-        sendSMS(sender_number, message)
-    else:
+        sendSMS(sender_number, message)"""
+    if not Words.has_key(word):
         sendSMS(sender_number, "the fuck broah. follow the rules")
-
-    # End game if there are two or less users
-    if len(Users) <= 2:
-      global Users
-      Users = {}
-
-      winners = ''
-      for user in Users.values():
-        sendSMS(user.number, "You freakin WON! Now you have the flower powers.")
-        winners += user.name + ' '
-      for user in UsersKilled.values():
-        sendSMS(user.number, "Loser. Congratulate these bad boys: " + winners)
+    else:
+        killer = Users[sender_number]
+        target = Users[killer.target_number]
+        if not word == target.secret_word:
+            sendSMS(sender_number, "the fuck broah. follow the rules")
+        else:
+            killer.target_name = target.target_name
+            killer.target_number = target.target_number
+            UsersKilled[target.number] = target
+            del Users[target.number]
+            for i, suser in enumerate(ShuffledUsers):
+                if suser.number == target.number:
+	                 del ShuffledUsers[i]
+            message = "you've been removed from the game.. sucker."
+            sendSMS(target.number, message)
+            if len(Users.keys()) > 2:
+                sendSMS(killer.number, getPartialCongrats() + "Your new target is: " + killer.target_name)
+            else:
+                winners = ''
+                for user in Users.values():
+                    sendSMS(user.number, "You freakin WON! Now you have the flower powers.")
+                    winners += user.name + ' '
+                for user in UsersKilled.values():
+                    sendSMS(user.number, "Loser. Congratulate these bad boys: " + winners)
 
     return 'ok' 
 
-
+# Deprecated
 def updateTarget(user_killed):
     for user in Users.values():
         if user.target_number == user_killed.number:
@@ -114,6 +161,7 @@ def fake():
     # this is just to initialize fake users,
     # so we can test without texting
     global Users
+    global ShuffledUsers
     Users = {
         17144175062: User(**{
                 "target_name": "daniel gur",
@@ -143,6 +191,7 @@ def fake():
                 "name": "daniel diaz"
                 }),
         }
+    ShuffledUsers = Users.values()
     return redirect('/')
 
 
@@ -171,25 +220,28 @@ def poststartgame():
         Users[number] = user
 
     users_list = list(Users.values())
-    for user in users_list[:]:
-        try:
-            sendSMS(user.number,
-                   "Get ready. It's about to get real. Your target will be sent shortly.")
-        except: 
-            logging.warn("Catching exception for " + str(user.number) + " bout to delete...")
-            del Users[user.number]
-            users_list.remove(user)
+    # This makes sure that there are more secret words than users
+    # TODO(esadac): make this more reliable, get more words or something.
+    if len(users_list) <= len(Words.values()):
+        for user in users_list[:]:
+            try:
+                sendSMS(user.number,
+                       "Get ready. It's about to get real. Your target will be sent shortly.")
+            except: 
+                logging.warn("Catching exception for " + str(user.number) + " bout to delete...")
+                del Users[user.number]
+                users_list.remove(user)
    
-    random.shuffle(users_list)
-    ShuffledUsers = users_list
-    for i, user in enumerate(users_list):
-        user.target_number = users_list[ (i + 1) % len(users_list)].number
-        user.target_name = users_list[ (i + 1) % len(users_list)].name
-        user.secret_word = getSecretWord()
+        random.shuffle(users_list)
+        ShuffledUsers = users_list
+        for i, user in enumerate(users_list):
+            user.target_number = users_list[ (i + 1) % len(users_list)].number
+            user.target_name = users_list[ (i + 1) % len(users_list)].name
+            user.secret_word = getSecretWord()
 
-    for i, user in enumerate(users_list):
-        sendSMS(user.number,
-                "Welcome to the game, your target is: " + Users[user.target_number].name + ". Your secret word is: " + Users[user.target_number].secret_word)
+        for i, user in enumerate(users_list):
+            sendSMS(user.number,
+                    "Welcome to the game, your target is: " + Users[user.target_number].name + ". Your secret word is: " + Users[user.number].secret_word)
         
     return 'ok'
 
