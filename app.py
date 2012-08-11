@@ -34,13 +34,27 @@ Users = {
 @app.route('/', methods=['GET', 'POST'])
 def receiveSMS():
     body = request.values.get('Body', '')
+
     resp = twilio.twiml.Response()
     message = "You've been removed from the game.. sucker."
     resp.sms(message)
-    user_phone_num = request.values.get('From', '')
-    print user_phone_num
-    del Users[int(user_phone_num)]
+
+    # Get user num who just died and updateTarget
+    dead_user_phone_num = request.values.get('From', '')
+    updateTarget(Users[int(dead_user_phone_num)])
+    print dead_user_phone_num
+
+    del Users[int(dead_user_phone_num)]
     return str(resp)
+
+def updateTarget(user_killed):
+    users = Users.values()
+    for user in users:
+        if user.target_number == user_killed.number:
+            user.target_number = user_killed.target_number  
+            sendSMS(user.number, "Your new target is: " + Users[user_killed.target_number].name)
+            break
+    
 
 def sendSMS(phone_num, text):
     from_="+19492163884"
