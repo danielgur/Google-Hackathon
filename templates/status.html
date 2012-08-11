@@ -12,6 +12,17 @@
 	  </script>
 </head>
     <body>
-	  
+	<table>
+	<tr>
+		<td>User</td>
+		<td>Number</td>
+		<td>Looking for</td>
+	{% for user in Users %}	  
+		 <td>{{user.name}}<td>
+		 <td>{{user.number}}<td>
+		 <td>{{Users[user.target_numer].name}}<td>	
+	{% endfor %}
+	</tr>
+	</table>
    </body>
 </html>
