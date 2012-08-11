@@ -159,8 +159,8 @@ def poststartgame():
 
 @app.route('/gamestatus', methods=['GET'])
 def gamestatus():
-    return json.dumps([user.serialize() 
-                       for number, user in Users.items()])
+    users = [user.serialize() for number, user in Users.items()]
+    return json.dumps(users)
 
 if __name__ == '__main__':
     # Bind to PORT if defined, otherwise default to 5000.
