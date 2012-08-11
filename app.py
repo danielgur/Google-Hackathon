@@ -9,7 +9,7 @@ from twilio.rest import TwilioRestClient
 client = TwilioRestClient()
 
 app = Flask(__name__)
-# app.debug = True
+app.debug = True
 
 Users = []
 
@@ -35,19 +35,25 @@ def poststartgame():
     data = request.values['data']
 
     global Users
-    Users = []
+    Users = {}
     for line in data.split('\n'):
         name, number = line.split(',')
         name, number = name.strip(), number.strip()
         user = User(name=name, number=number)
-        Users.append(user)
+        Users[number] = user
+
+    
+    users_list = list(Users.values())
+    for i, user in enumerate(users_list):
+        
+        user.targetid = users_list[ (i + 1) % len(users_list)].id
 
     return 'ok'
 
 @app.route('/gamestatus', methods=['GET'])
 def gamestatus():
     return json.dumps([user.serialize() 
-                       for user in Users])
+                       for number, user in Users.items()])
 
 if __name__ == '__main__':
     # Bind to PORT if defined, otherwise default to 5000.
