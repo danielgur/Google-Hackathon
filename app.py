@@ -33,7 +33,7 @@ Users = {
             "name": "Elissa"
             }),
     14822887950: User(**{
-            "target_name": "Huan",
+            "target_name": "Huan #2",
             "target_number": 12165482911,
             "number": 14822887950,
             "name": "daniel diaz"
@@ -103,6 +103,13 @@ def poststartgame():
         Users[number] = user
 
     users_list = list(Users.values())
+    for user in users_list:
+        try:
+            sendSMS(user.number,
+                   "Get ready. It's about to get real. Your target will be sent shortly.")
+        except: 
+            del Users[user.number]
+   
     random.shuffle(users_list)
     for i, user in enumerate(users_list):
         user.target_number = users_list[ (i + 1) % len(users_list)].number
@@ -111,6 +118,7 @@ def poststartgame():
     for i, user in enumerate(users_list):
         sendSMS(user.number,
                 "Welcome to the game, your target is: " + Users[user.target_number].name)
+        
 
     return 'ok'
 
