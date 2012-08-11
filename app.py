@@ -24,7 +24,7 @@ def hello():
 
 def sendSMS(phone_num, text):
     message = client.sms.messages.create(to=phone_num, from_="+19492163884",
-                                     body=text)
+                                         body=text)
 
 @app.route('/startgame', methods=['GET'])
 def getstartgame():
@@ -37,6 +37,9 @@ def poststartgame():
     global Users
     Users = {}
     for line in data.split('\n'):
+        line = line.strip()
+        if not line:
+            continue
         name, number = line.split(',')
         name, number = name.strip(), number.strip()
         user = User(name=name, number=number)
@@ -46,6 +49,7 @@ def poststartgame():
     for i, user in enumerate(users_list):
         user.targetid = users_list[ (i + 1) % len(users_list)].id
 
+    
     return 'ok'
 
 @app.route('/gamestatus', methods=['GET'])
