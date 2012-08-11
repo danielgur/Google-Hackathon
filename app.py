@@ -1,11 +1,23 @@
-from flask import Flask, request, render_template
-from User import User
-import logging
+# Copyright 2012. Team Flower Power.
+# Google Intern Hackathon
+#
+# Team:
+#	Daniel Gur
+#	Elissa Wolf
+#	Enrique Sada
+# 	Huan Do
+#
+
 import json
+import logging
 import os
 import random
 import twilio.twiml
 
+
+
+from flask import Flask, request, render_template
+from User import User
 from twilio.rest import TwilioRestClient
 
 client = TwilioRestClient()
@@ -31,8 +43,14 @@ Users = {
             "target_number": 17144175062,
             "number": 12165482911,
             "name": "Elissa"
-            })
-    }
+            }),
+    14822887950: User(**{
+            "target_name": "Huan",
+            "target_number": 12165482911,
+            "number": 14822887950,
+            "name": "daniel diaz"
+            }),
+   }
 UsersKilled = {}
 
 @app.route('/', methods=['GET', 'POST'])
