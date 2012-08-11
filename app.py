@@ -21,7 +21,7 @@ def receiveSMS():
     resp.sms(message)
     user = request.values.get('From', '')
     print user
-    del users[user]
+    del Users[user]
     return str(resp)
 
 def sendSMS(phone_num, text):
