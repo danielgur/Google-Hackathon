@@ -51,10 +51,10 @@ def receiveSMS():
 
     if len(Users) <= 2:
       winners = ''
-      for user in Users:
+      for user in Users.values():
         sendSMS(user.number, "You freakin WON! Now you have the flower powers.")
         winners += user.name + ' '
-      for user in UsersKilled:
+      for user in UsersKilled.values():
         sendSMS(user.number, "Loser.  Congratulate these bad boys: " + winners)
     return '' 
 
