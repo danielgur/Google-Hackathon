@@ -69,7 +69,7 @@ def poststartgame():
 
 @app.route('/dashboard', methods=['GET'])
 def dashboard():
-    render_template()    
+    return render_template('status.html', **{'Users': Users})
 
 @app.route('/gamestatus', methods=['GET'])
 def gamestatus():
