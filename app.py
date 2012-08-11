@@ -44,7 +44,9 @@ def receiveSMS():
         # Delete dead user from current players
         UsersKilled[sender_number] = dead_user 
         del Users[sender_number]
-        del ShuffledUsers[sender_number]
+	for i,suser in enumerate(ShuffledUsers):
+            if suser.number == user.number:
+	        del ShuffledUsers[i]
         message = "you've been removed from the game.. sucker."
         sendSMS(sender_number, message)
     else:
@@ -146,7 +148,9 @@ def poststartgame():
         except: 
             logging.warn("Catching exception for " + str(user.number) + " bout to delete...")
             del Users[user.number]
-	    del ShuffledUsers[user.number]
+	    for i,suser in enumerate(ShuffledUsers):
+                if suser.number == user.number:
+	            del ShuffledUsers[i]
             users_list.remove(user)
    
     random.shuffle(users_list)
