@@ -50,7 +50,7 @@ def poststartgame():
         if not line:
             continue
         number, name = line.split(',')
-        name, number = name.strip(), number.strip()
+        name, number = name.strip(), int(number.strip())
         user = User(name=name, number=number)
         Users[number] = user
 
