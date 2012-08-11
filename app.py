@@ -14,7 +14,7 @@ import os
 import random
 import twilio.twiml
 
-from flask import Flask, request, render_template
+from flask import Flask, request, render_template, redirect
 from User import User
 from twilio.rest import TwilioRestClient
 
@@ -109,7 +109,7 @@ def fake():
                 "name": "daniel diaz"
                 }),
         }
-    return 'ok'
+    return redirect('/')
 
 
 @app.route('/', methods=['GET'])
