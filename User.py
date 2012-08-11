@@ -11,4 +11,7 @@ class User(object):
         self.targetid = targetid
 
     def serialize(self):
-        return self.id, self.name, self.number, self.targetid
+        return dict(id=self.id,
+                    name=self.name, 
+                    number=self.number, 
+                    targetid=self.targetid)
