@@ -15,17 +15,19 @@ app.debug = True
 
 Users = { 
     17144175062: User(**{
-            "target_number": 12169705010,
+            "target_name": "daniel gur",
             "target_number": 12169705010,
             "number": 17144175062,
             "name": "Huan"
             }),
     12169705010: User(**{
+            "target_name": "Elissa",
             "target_number": 12165482911,
             "number": 12169705010,
             "name": "daniel gur"
             }),
     12165482911: User(**{
+            "target_name": "Huan",
             "target_number": 17144175062,
             "number": 12165482911,
             "name": "Elissa"
@@ -41,7 +43,7 @@ def receiveSMS():
         message = "you've been removed from the game.. sucker."
         sendSMS(sender_number, message)
         updatetarget(users[int(sender_number)])
-        del users[int(sender_number)]
+        del Users[int(sender_number)]
     else:
         sendSMS(sender_number, "the fuck broah. follow the rules")
 
