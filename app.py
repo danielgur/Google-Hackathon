@@ -12,7 +12,7 @@ client = TwilioRestClient()
 app = Flask(__name__)
 app.debug = True
 
-Users = []
+Users = {}
 
 @app.route('/', methods=['GET', 'POST'])
 def receiveSMS():
