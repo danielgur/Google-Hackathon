@@ -2,6 +2,7 @@ from flask import Flask, request, render_template
 from User import User
 import json
 import os
+import random
 import twilio.twiml
 
 from twilio.rest import TwilioRestClient
@@ -49,12 +50,13 @@ def poststartgame():
         Users[number] = user
 
     users_list = list(Users.values())
+    random.shuffle(user_list)
     for i, user in enumerate(users_list):
         user.target_number = users_list[ (i + 1) % len(users_list)].number
 
     for i, user in enumerate(users_list):
         sendSMS(user.number,
-                "Welcome to the game, your target is: " + users_list[ (i + 1) % len(users_list)].name)
+                "Welcome to the game, your target is: " + users_list[ (i - 1) % len(users_list)].name)
 
 
 
