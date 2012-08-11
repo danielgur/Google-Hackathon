@@ -1,6 +1,6 @@
 # Copyright 2012. Team Flower Power.
 # Google Intern Hackathon
-#
+# 
 # Team:
 #	Daniel Gur
 #	Elissa Wolf
