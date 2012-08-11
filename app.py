@@ -89,7 +89,7 @@ def poststartgame():
     random.shuffle(users_list)
     for i, user in enumerate(users_list):
         user.target_number = users_list[ (i + 1) % len(users_list)].number
-        user.target_number = users_list[ (i + 1) % len(users_list)].name
+        user.target_name = users_list[ (i + 1) % len(users_list)].name
 
     for i, user in enumerate(users_list):
         sendSMS(user.number,
