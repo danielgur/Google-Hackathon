@@ -34,9 +34,9 @@ Users = {
 @app.route('/', methods=['GET', 'POST'])
 def receiveSMS():
     text_received = request.values.get('Body', '')
-    sender_number = request.values.get('from', '')
+    sender_number = request.values.get('From', '')
 
-    if text_received.lower() == 'dead':
+    if text_received.strip().lower() == 'dead':
         resp = twilio.twiml.response()
         message = "you've been removed from the game.. sucker."
         resp.sms(message)
