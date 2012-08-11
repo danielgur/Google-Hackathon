@@ -150,6 +150,7 @@ def getPartialCongrats():
 
 
 def sendSMS(phone_num, text):
+    text = "\n\n" + text
     from_="+19492163884"
     logging.warn('sending a message from %s to %s with content: %s' % (
             from_, phone_num,  text))
