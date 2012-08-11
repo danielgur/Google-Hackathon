@@ -210,7 +210,7 @@ def poststartgame():
 
         for i, user in enumerate(users_list):
             sendSMS(user.number,
-                    "Welcome to the game, your target is: " + Users[user.target_number].name + ". Your secret word is: " + Users[user.target_number].secret_word)
+                    "Welcome to the game, your target is: " + Users[user.target_number].name + ". Your secret word is: " + Users[user].secret_word)
         
     return 'ok'
 
