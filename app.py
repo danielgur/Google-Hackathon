@@ -14,8 +14,6 @@ import os
 import random
 import twilio.twiml
 
-
-
 from flask import Flask, request, render_template
 from User import User
 from twilio.rest import TwilioRestClient
@@ -53,7 +51,7 @@ Users = {
    }
 UsersKilled = {}
 
-@app.route('/', methods=['GET', 'POST'])
+@app.route('/kill', methods=['GET', 'POST'])
 def receiveSMS():
     text_received = request.values.get('Body', '')
     sender_number = request.values.get('From', '')
@@ -95,7 +93,7 @@ def sendSMS(phone_num, text):
                                      body=text)
     return message
 
-@app.route('/startgame', methods=['GET'])
+@app.route('/', methods=['GET'])
 def getstartgame():
     return render_template('form.html')
 

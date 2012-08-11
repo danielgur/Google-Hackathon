@@ -1,13 +1,34 @@
 <html>
     <head><title>Input to start game</title></head>
     <body>
-	<form name="myform" action="startgame" method="POST">
-       		<textarea cols="40" rows="15" name="data">
-12169705010, daniel gur
-17144175062, Huan
-12165482911, Elissa
-		</textarea><br />
-                <input type="submit" value="Submit" />
+	<form name="myform">
+       		<input type = "text" class = "number" value = "12169705010" />
+		<input type = "text" class = "name" value ="daniel gur" /><br />
+       		<input type = "text" class = "number" value = "17144175062" />
+		<input type = "text" class = "name" value = "Huan" /><br />
+      		<input type = "text" class = "number" value = "12165482911" />
+		<input type = "text" class = "name" value = "Elissa" /><br />
+		<div id = "newEntries"></div>
+		<input type = "button" onclick = "addNew();" value = "Add new entry">
+                <input type= "button" onclick = "processData();" value="Submit" />
 	</form>
    </body>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+	<script>
+		function addNew(){
+		$('#newEntries').append($('<input type = "text" class = "number" /><input type = "text" class = "name" /><br />'));
+		  console.log("add news");
+		}
+		function processData(){
+			var result = "";
+	      	   	var numElements = document.getElementsByClassName("number");
+	      	   	var nameElements = document.getElementsByClassName("name");
+	       		n = numElements.length;
+			for (var i = 0; i < n; i++) {
+			result += numElements[i].value + "," + nameElements[i].value + "\n";
+			}
+		$.post("/startgame", {data: result});
+		window.location = "dashboard";
+		}
+	</script>
 </html>
