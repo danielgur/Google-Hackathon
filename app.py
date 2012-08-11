@@ -75,7 +75,7 @@ def receiveSMS():
 	                 del ShuffledUsers[i]
             message = "you've been removed from the game.. sucker."
             sendSMS(target.number, message)
-            if len(Users > 2):
+            if len(Users.keys()) > 2:
                 sendSMS(killer.number, getPartialCongrats() + "Your new target is: " + killer.target_name)
             else:
                 winners = ''
