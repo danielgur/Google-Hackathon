@@ -75,17 +75,15 @@ def receiveSMS():
 	                 del ShuffledUsers[i]
             message = "you've been removed from the game.. sucker."
             sendSMS(target.number, message)
-
-    # End game if there are two or less users
-    if len(Users) <= 2:
-        Users = {}
-
-        winners = ''
-        for user in Users.values():
-            sendSMS(user.number, "You freakin WON! Now you have the flower powers.")
-            winners += user.name + ' '
-        for user in UsersKilled.values():
-            sendSMS(user.number, "Loser. Congratulate these bad boys: " + winners)
+            if len(Users > 2):
+                sendSMS(killer.number, getPartialCongrats() + "Your new target is: " + killer.target_name)
+            else:
+                winners = ''
+                for user in Users.values():
+                    sendSMS(user.number, "You freakin WON! Now you have the flower powers.")
+                    winners += user.name + ' '
+                for user in UsersKilled.values():
+                    sendSMS(user.number, "Loser. Congratulate these bad boys: " + winners)
 
     return 'ok' 
 
