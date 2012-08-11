@@ -66,12 +66,10 @@
 
 						 setInterval(function(){
 								 get(function(data){
-										 userz = JSON.parse(data);
-										 console.log(userz);
 										 var new_users = JSON.parse(data);
 										 if (new_users.length < users.length){
-											 console.log(user);
-											 console.log(new_user);
+											 console.log(users);
+											 console.log(new_users);
 
 											 // look at old users and delete the ones
 											 // that are not in new_users
