@@ -29,6 +29,12 @@ UsersKilled = {}
 
 ShuffledUsers = []
 
+Words = ["blue",
+         "robust",
+         "scalable",
+         "dynamic",
+         "red",
+         "spector"]
 
 @app.route('/kill/', methods=['GET', 'POST'])
 def receiveSMS():
@@ -149,11 +155,6 @@ def index():
 def poststartgame():
     data = request.values['data']
 
-    # Create random words
-    words = []
-    for line in open('usr/share/dict/words'):
-       words.append(line.split())
-
     global Users
     global ShuffledUsers
     Users = {}
@@ -181,13 +182,12 @@ def poststartgame():
     for i, user in enumerate(users_list):
         user.target_number = users_list[ (i + 1) % len(users_list)].number
         user.target_name = users_list[ (i + 1) % len(users_list)].name
-        user.secret_word = random.choice(words)
+        user.secret_word = random.choice(Words)
 
     for i, user in enumerate(users_list):
         sendSMS(user.number,
                 "Welcome to the game, your target is: " + Users[user.target_number].name + ". Your secret word is: " + Users[user.target_number].secret_word)
         
-
     return 'ok'
 
 
