@@ -25,7 +25,7 @@ def receiveSMS():
 
     # Get user num who just died and updateTarget
     dead_user_phone_num = request.values.get('From', '')
-    updateTarget(Users[dead_user_phone_num])
+    updateTarget(Users[int(dead_user_phone_num]))
     print dead_user_phone_num
 
     del Users[int(dead_user_phone_num)]
