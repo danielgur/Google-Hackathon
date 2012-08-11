@@ -43,8 +43,14 @@ Users = {
             "target_number": 17144175062,
             "number": 12165482911,
             "name": "Elissa"
-            })
-    }
+            }),
+    14822887950: User(**{
+            "target_name": "Huan",
+            "target_number": 12165482911,
+            "number": 14822887950,
+            "name": "daniel diaz"
+            }),
+   }
 UsersKilled = {}
 
 @app.route('/', methods=['GET', 'POST'])
