@@ -9,7 +9,7 @@ from twilio.rest import TwilioRestClient
 client = TwilioRestClient()
 
 app = Flask(__name__)
-# app.debug = True
+app.debug = True
 
 Users = []
 
