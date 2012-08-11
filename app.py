@@ -110,7 +110,8 @@ def poststartgame():
 
 @app.route('/dashboard', methods=['GET'])
 def dashboard():
-    return render_template('status.html', **{'Users': Users.values()})
+    return render_template('status.html', **{'Users': 
+                                             [ user.serialize() for user in Users.values() ]})
 
 @app.route('/gamestatus', methods=['GET'])
 def gamestatus():
