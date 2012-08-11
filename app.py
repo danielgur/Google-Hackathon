@@ -5,7 +5,7 @@ import os
 import twilio.twiml
 
 app = Flask(__name__)
-app.debug = True
+# app.debug = True
 
 Users = []
 
@@ -30,6 +30,7 @@ def poststartgame():
     Users = []
     for line in data.split('\n'):
         name, number = line.split(',')
+        name, number = name.strip(), number.strip()
         user = User(name=name, number=number)
         Users.append(user)
 
@@ -37,7 +38,8 @@ def poststartgame():
 
 @app.route('/gamestatus', methods=['GET'])
 def gamestatus():
-    return json.dumps(Users)
+    return json.dumps([user.serialize() 
+                       for user in Users])
 
 if __name__ == '__main__':
     # Bind to PORT if defined, otherwise default to 5000.
