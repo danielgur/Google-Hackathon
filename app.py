@@ -43,7 +43,7 @@ Users = {
             "name": "Elissa"
             }),
     14822887950: User(**{
-            "target_name": "Huan",
+            "target_name": "Huan #2",
             "target_number": 12165482911,
             "number": 14822887950,
             "name": "daniel diaz"
@@ -53,36 +53,42 @@ UsersKilled = {}
 
 @app.route('/kill', methods=['GET', 'POST'])
 def receiveSMS():
+    # Get info of received SMS
     text_received = request.values.get('Body', '')
-    sender_number = request.values.get('From', '')
+    sender_number = int(request.values.get('From', ''))
 
+    # If user died, make necessary updates
     if text_received.strip().lower() == 'dead':
-        updateTarget(Users[int(sender_number)])
-        UsersKilled[int(sender_number)] = Users[int(sender_number)]
-        del Users[int(sender_number)]
+        dead_user = Users[sender_number]
+        updateTarget(dead_user)
+        
+        # Add dead user to UsersKilled
+        # Delete dead user from current players
+        UsersKilled[sender_number] = dead_user 
+        del Users[sender_number]
         message = "you've been removed from the game.. sucker."
         sendSMS(sender_number, message)
     else:
         sendSMS(sender_number, "the fuck broah. follow the rules")
 
+    # End game if there are two or less users
     if len(Users) <= 2:
       winners = ''
       for user in Users.values():
         sendSMS(user.number, "You freakin WON! Now you have the flower powers.")
         winners += user.name + ' '
       for user in UsersKilled.values():
-        sendSMS(user.number, "Loser.  Congratulate these bad boys: " + winners)
-    return '' 
+        sendSMS(user.number, "Loser. Congratulate these bad boys: " + winners)
+
+    return 'ok' 
 
 def updateTarget(user_killed):
-    users = Users.values()
-    for user in users:
+    for user in Users.values():
         if user.target_number == user_killed.number:
             user.target_number = user_killed.target_number  
             user.target_name = user_killed.target_name
-            sendSMS(user.number, "Your new target is: " + Users[user_killed.target_number].name)
+            sendSMS(user.number, "Nice kill. Your new target is: " + user.target_name)
             break
-    
 
 def sendSMS(phone_num, text):
     from_="+19492163884"
@@ -113,6 +119,15 @@ def poststartgame():
         Users[number] = user
 
     users_list = list(Users.values())
+    for user in users_list:
+        try:
+            sendSMS(user.number,
+                   "Get ready. It's about to get real. Your target will be sent shortly.")
+        except: 
+            logging.warn("Catching exception for " + str(user.number) + " bout to delete...")
+            del Users[user.number]
+            users_list.remove(user)
+   
     random.shuffle(users_list)
     for i, user in enumerate(users_list):
         user.target_number = users_list[ (i + 1) % len(users_list)].number
@@ -121,6 +136,7 @@ def poststartgame():
     for i, user in enumerate(users_list):
         sendSMS(user.number,
                 "Welcome to the game, your target is: " + Users[user.target_number].name)
+        
 
     return 'ok'
 
