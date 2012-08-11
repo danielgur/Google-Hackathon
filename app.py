@@ -30,6 +30,7 @@ Users = {
             "name": "Elissa"
             })
     }
+UsersKilled = {}
 
 @app.route('/', methods=['GET', 'POST'])
 def receiveSMS():
@@ -41,11 +42,19 @@ def receiveSMS():
         message = "you've been removed from the game.. sucker."
         resp.sms(message)
 
-        updatetarget(users[int(sender_number)])
-        del users[int(sender_number)]
+        updatetarget(Users[int(sender_number)])
+        UsersKilled[int(sender_number)] = Users[int(sender_number)]
+        del Users[int(sender_number)]
     else:
         sendSMS(sender_number, "the fuck broah. follow the rules")
 
+    if len(Users) <= 2:
+      winners = ''
+      for user in Users:
+        sendSMS(user.number, "You freakin WON! Now you have the flower powers.")
+        winners += user.name + ' '
+      for user in UsersKilled:
+        sendSMS(user.number, "Loser.  Congratulate these bad boys: " + winners)
     return str(resp)
 
 def updateTarget(user_killed):
