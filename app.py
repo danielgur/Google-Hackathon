@@ -29,12 +29,12 @@ UsersKilled = {}
 
 ShuffledUsers = []
 
-Words = ["blue",
-         "robust",
-         "scalable",
-         "dynamic",
-         "red",
-         "spector"]
+Words = {"blue": False,
+         "robust": False,
+         "scalable": False,
+         "dynamic": False,
+         "red": False,
+         "spector": False}
 
 @app.route('/kill/', methods=['GET', 'POST'])
 def receiveSMS():
@@ -179,7 +179,7 @@ def poststartgame():
     for i, user in enumerate(users_list):
         user.target_number = users_list[ (i + 1) % len(users_list)].number
         user.target_name = users_list[ (i + 1) % len(users_list)].name
-        user.secret_word = random.choice(Words)
+        user.secret_word = getSecretWord()
 
     for i, user in enumerate(users_list):
         sendSMS(user.number,
@@ -188,6 +188,13 @@ def poststartgame():
 
     return 'ok'
 
+# A word is true if it has been used before.
+def getSecretWord():
+    word = random.choice(Words.keys())
+    while Words[word] == True:
+        word = random.choice(Words.keys())
+    Words[word] = True
+    return word
 
 @app.route('/gamestatus', methods=['GET'])
 def gamestatus():
