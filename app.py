@@ -52,6 +52,7 @@ def updateTarget(user_killed):
     for user in users:
         if user.target_number == user_killed.number:
             user.target_number = user_killed.target_number  
+            user.target_name = user_killed.target_name
             sendSMS(user.number, "Your new target is: " + Users[user_killed.target_number].name)
             break
     
@@ -88,18 +89,17 @@ def poststartgame():
     random.shuffle(users_list)
     for i, user in enumerate(users_list):
         user.target_number = users_list[ (i + 1) % len(users_list)].number
+        user.target_number = users_list[ (i + 1) % len(users_list)].name
 
     for i, user in enumerate(users_list):
         sendSMS(user.number,
                 "Welcome to the game, your target is: " + Users[user.target_number].name)
 
-        Users[user.target_number].name
-
     return 'ok'
 
 @app.route('/dashboard', methods=['GET'])
 def dashboard():
-    return render_template('status.html', **{'Users': Users})
+    return render_template('status.html', **{'Users': Users.values()})
 
 @app.route('/gamestatus', methods=['GET'])
 def gamestatus():
