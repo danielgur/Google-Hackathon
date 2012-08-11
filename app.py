@@ -29,7 +29,7 @@ UsersKilled = {}
 
 ShuffledUsers = []
 
-@app.route('/kill', methods=['GET', 'POST'])
+@app.route('/kill/', methods=['GET', 'POST'])
 def receiveSMS():
     # Get info of received SMS
     text_received = request.values.get('Body', '')
