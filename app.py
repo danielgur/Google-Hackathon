@@ -34,7 +34,7 @@ def receiveSMS():
 def updateTarget(user_killed):
     users = Users.values()
     for user in users:
-        if user.target_number = user_killed.number:
+        if user.target_number == user_killed.number:
             user.target_number = user_killed.target_number  
             break
     
