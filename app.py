@@ -42,10 +42,8 @@ def poststartgame():
         user = User(name=name, number=number)
         Users[number] = user
 
-    
     users_list = list(Users.values())
     for i, user in enumerate(users_list):
-        
         user.targetid = users_list[ (i + 1) % len(users_list)].id
 
     return 'ok'
