@@ -1,17 +1,12 @@
-id = 0
-
 class User(object):
+    # Users = []
 
-    def __init__(self, name, number, targetid=None):
-        global id
-        id += 1
-        self.id = id
+    def __init__(self, name, number, target_number=None):
         self.name = name
         self.number = number
-        self.targetid = targetid
+        self.target_number = target_number
 
     def serialize(self):
-        return dict(id=self.id,
-                    name=self.name, 
+        return dict(name=self.name, 
                     number=self.number, 
-                    targetid=self.targetid)
+                    target_number=self.target_number)

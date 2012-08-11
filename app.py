@@ -40,16 +40,15 @@ def poststartgame():
         line = line.strip()
         if not line:
             continue
-        name, number = line.split(',')
+        number, name = line.split(',')
         name, number = name.strip(), number.strip()
         user = User(name=name, number=number)
         Users[number] = user
 
     users_list = list(Users.values())
     for i, user in enumerate(users_list):
-        user.targetid = users_list[ (i + 1) % len(users_list)].id
+        user.target_number = users_list[ (i + 1) % len(users_list)].number
 
-    
     return 'ok'
 
 @app.route('/gamestatus', methods=['GET'])
