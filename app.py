@@ -29,6 +29,7 @@ UsersKilled = {}
 
 ShuffledUsers = []
 
+
 @app.route('/kill/', methods=['GET', 'POST'])
 def receiveSMS():
     # Get info of received SMS
@@ -45,8 +46,8 @@ def receiveSMS():
         UsersKilled[sender_number] = dead_user 
         del Users[sender_number]
         for i, suser in enumerate(ShuffledUsers):
-            if suser.number == user.number:
-	        del ShuffledUsers[i]
+            if suser.number == dead_user.number:
+	            del ShuffledUsers[i]
         message = "you've been removed from the game.. sucker."
         sendSMS(sender_number, message)
     else:
@@ -63,6 +64,7 @@ def receiveSMS():
 
     return 'ok' 
 
+
 def updateTarget(user_killed):
     for user in Users.values():
         if user.target_number == user_killed.number:
@@ -70,6 +72,7 @@ def updateTarget(user_killed):
             user.target_name = user_killed.target_name
             sendSMS(user.number, getPartialCongrats() + "Your new target is: " + user.target_name)
             break
+
 
 def getPartialCongrats():
     possibleMsgs = ["Nice kill. ",
@@ -82,6 +85,7 @@ def getPartialCongrats():
 
     return random.choice(possibleMsgs) 
 
+
 def sendSMS(phone_num, text):
     from_="+19492163884"
     logging.warn('sending a message from %s to %s with content: %s' % (
@@ -91,8 +95,10 @@ def sendSMS(phone_num, text):
                                          body=text)
     return message
 
+
 def gaming():
     return bool(Users)
+
 
 @app.route('/fake', methods=['GET'])
 def fake():
@@ -138,6 +144,7 @@ def index():
     else:
         return render_template('dashboard.html')
 
+
 @app.route('/startgame', methods=['POST'])
 def poststartgame():
     data = request.values['data']
@@ -167,9 +174,6 @@ def poststartgame():
         except: 
             logging.warn("Catching exception for " + str(user.number) + " bout to delete...")
             del Users[user.number]
-	    for i,suser in enumerate(ShuffledUsers):
-                if suser.number == user.number:
-	            del ShuffledUsers[i]
             users_list.remove(user)
    
     random.shuffle(users_list)
