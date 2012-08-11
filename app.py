@@ -38,6 +38,7 @@ Words = {"blue": False,
 
 @app.route('/kill/', methods=['GET', 'POST'])
 def receiveSMS():
+    global Users
     # Get info of received SMS
     text_received = request.values.get('Body', '')
     sender_number = int(request.values.get('From', ''))
@@ -61,15 +62,14 @@ def receiveSMS():
 
     # End game if there are two or less users
     if len(Users) <= 2:
-      global Users
-      Users = {}
+        Users = {}
 
-      winners = ''
-      for user in Users.values():
-        sendSMS(user.number, "You freakin WON! Now you have the flower powers.")
-        winners += user.name + ' '
-      for user in UsersKilled.values():
-        sendSMS(user.number, "Loser. Congratulate these bad boys: " + winners)
+        winners = ''
+        for user in Users.values():
+            sendSMS(user.number, "You freakin WON! Now you have the flower powers.")
+            winners += user.name + ' '
+        for user in UsersKilled.values():
+            sendSMS(user.number, "Loser. Congratulate these bad boys: " + winners)
 
     return 'ok' 
 
@@ -114,6 +114,7 @@ def fake():
     # this is just to initialize fake users,
     # so we can test without texting
     global Users
+    global ShuffledUsers
     Users = {
         17144175062: User(**{
                 "target_name": "daniel gur",
@@ -143,6 +144,7 @@ def fake():
                 "name": "daniel diaz"
                 }),
         }
+    ShuffledUsers = Users.values()
     return redirect('/')
 
 
