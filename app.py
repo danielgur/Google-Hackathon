@@ -1,11 +1,23 @@
-from flask import Flask, request, render_template
-from User import User
-import logging
+# Copyright 2012. Team Flower Power.
+# Google Intern Hackathon
+# 
+# Team:
+#	Daniel Gur
+#	Elissa Wolf
+#	Enrique Sada
+# 	Huan Do
+#
+
 import json
+import logging
 import os
 import random
 import twilio.twiml
 
+
+
+from flask import Flask, request, render_template
+from User import User
 from twilio.rest import TwilioRestClient
 
 client = TwilioRestClient()
@@ -124,7 +136,8 @@ def poststartgame():
 
 @app.route('/dashboard', methods=['GET'])
 def dashboard():
-    return render_template('status.html', **{'Users': Users.values()})
+    return render_template('status.html', **{'Users': 
+                                             [ user.serialize() for user in Users.values() ]})
 
 @app.route('/gamestatus', methods=['GET'])
 def gamestatus():
