@@ -53,8 +53,7 @@
 			for (var i = 0; i < n; i++) {
                 var currNum = numElements[i].value;
                 var currName = nameElements[i].value
-                if(currNum.replace(/\s/g,"") != "" && !isEmpty(currNum) &&
-                    currName.replace(/\s/g,"") != "" && !isEmpty(currName))
+                if(!($.trim(currNum).length === 0 && $.trim(currName).length === 0))
 			        result += currNum + "," + currName + "\n";
 			}
 		$.post("/startgame", {data: result}, function(){
