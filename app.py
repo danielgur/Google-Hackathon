@@ -42,7 +42,7 @@ def receiveSMS():
 
     if text_received.strip().lower() == 'dead':
         message = "you've been removed from the game.. sucker."
-        resp.sms(message)
+        sendSMS(sender_number, message)
 
         updatetarget(Users[int(sender_number)])
         UsersKilled[int(sender_number)] = Users[int(sender_number)]
@@ -59,7 +59,7 @@ def receiveSMS():
         winners += user.name + ' '
       for user in UsersKilled:
         sendSMS(user.number, "Loser.  Congratulate these bad boys: " + winners)
-    return str(resp)
+    return '' 
 
 def updateTarget(user_killed):
     users = Users.values()
