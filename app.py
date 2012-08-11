@@ -44,7 +44,7 @@ def receiveSMS():
         # Delete dead user from current players
         UsersKilled[sender_number] = dead_user 
         del Users[sender_number]
-	    for i,suser in enumerate(ShuffledUsers):
+        for i, suser in enumerate(ShuffledUsers):
             if suser.number == user.number:
 	        del ShuffledUsers[i]
         message = "you've been removed from the game.. sucker."
