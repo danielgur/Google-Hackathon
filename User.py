@@ -3,7 +3,7 @@ class User(object):
 
     def __init__(self, name, number, target_number=None):
         self.name = name
-        self.number = number
+        self.number = int(number)
         self.target_number = target_number
 
     def serialize(self):

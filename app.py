@@ -1,5 +1,6 @@
 from flask import Flask, request, render_template
 from User import User
+import logging
 import json
 import os
 import random
@@ -26,7 +27,11 @@ def receiveSMS():
     return str(resp)
 
 def sendSMS(phone_num, text):
-    message = client.sms.messages.create(to=phone_num, from_="+19492163884",
+    from_="+19492163884"
+    logging.warn('sending a message from %s to %s with content: %s' % (
+            phone_num, from_, text))
+            
+    message = client.sms.messages.create(to=phone_num, from_=from_,
                                      body=text)
     return message
 
@@ -58,7 +63,7 @@ def poststartgame():
         sendSMS(user.number,
                 "Welcome to the game, your target is: " + Users[user.target_number].name)
 
-
+        Users[user.target_number].name
 
     return 'ok'
 
