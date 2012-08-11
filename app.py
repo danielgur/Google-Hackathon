@@ -66,8 +66,19 @@ def updateTarget(user_killed):
         if user.target_number == user_killed.number:
             user.target_number = user_killed.target_number  
             user.target_name = user_killed.target_name
-            sendSMS(user.number, "Nice kill. Your new target is: " + user.target_name)
+            sendSMS(user.number, getPartialCongrats() + "Your new target is: " + user.target_name)
             break
+
+def getPartialCongrats():
+    possibleMsgs = ["Nice kill. ",
+                    "Great hunt. ",
+                    "Get more blood on those hands. ",
+                    "Headshot. ",
+                    "MOFO is dead. ",
+                    "Dead. ",
+                    "Good work you beast. "]
+
+    return random.choice(possibleMsgs) 
 
 def sendSMS(phone_num, text):
     from_="+19492163884"
