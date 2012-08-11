@@ -51,7 +51,11 @@
 	      	   	var nameElements = document.getElementsByClassName("name");
 	       		n = numElements.length;
 			for (var i = 0; i < n; i++) {
-			result += numElements[i].value + "," + nameElements[i].value + "\n";
+                var currNum = numElements[i].value;
+                var currName = nameElements[i].value
+                if(currNum.replace(/\s/g,"") != "" && !isEmpty(currNum) &&
+                    currName.replace(/\s/g,"") != "" && !isEmpty(currName))
+			        result += currNum + "," + currName + "\n";
 			}
 		$.post("/startgame", {data: result}, function(){
 								window.location = "/";
