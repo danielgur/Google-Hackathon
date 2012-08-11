@@ -73,10 +73,10 @@
 
 											 // look at old users and delete the ones
 											 // that are not in new_users
-											 for(var i; i < users.length; i++){
+											 for(var i = 0; i < users.length; i++){
 												 var user = users[i];
 												 var alive = false;
-												 for(var j; j < new_users.length; j++){
+												 for(var j = 0; j < new_users.length; j++){
 													 var new_user = new_users[i];
 													 if (user.number == new_user.number){
 														 alive = true;
