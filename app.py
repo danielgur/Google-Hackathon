@@ -104,19 +104,22 @@ def fake():
                 "target_name": "daniel gur",
                 "target_number": 12169705010,
                 "number": 17144175062,
-                "name": "Huan"
+                "name": "Huan",
+                "secret_word": "scale"
                 }),
         12169705010: User(**{
                 "target_name": "Elissa",
                 "target_number": 12165482911,
                 "number": 12169705010,
-                "name": "daniel gur"
+                "name": "daniel gur",
+                "secret_word": "robust"
                 }),
         12165482911: User(**{
                 "target_name": "Huan",
                 "target_number": 17144175062,
-            "number": 12165482911,
-                "name": "Elissa"
+                "number": 12165482911,
+                "name": "Elissa",
+                "secret_word": "dynamic"
                 }),
         14822887950: User(**{
                 "target_name": "Huan #2",
@@ -138,6 +141,11 @@ def index():
 @app.route('/startgame', methods=['POST'])
 def poststartgame():
     data = request.values['data']
+
+    # Create random words
+    words = []
+    for line in open('usr/share/dict/words'):
+       words.append(line.split())
 
     global Users
     global ShuffledUsers
@@ -169,10 +177,11 @@ def poststartgame():
     for i, user in enumerate(users_list):
         user.target_number = users_list[ (i + 1) % len(users_list)].number
         user.target_name = users_list[ (i + 1) % len(users_list)].name
+        user.secret_word = random.choice(words)
 
     for i, user in enumerate(users_list):
         sendSMS(user.number,
-                "Welcome to the game, your target is: " + Users[user.target_number].name)
+                "Welcome to the game, your target is: " + Users[user.target_number].name + ". Your secret word is: " + Users[user.target_number].secret_word)
         
 
     return 'ok'
