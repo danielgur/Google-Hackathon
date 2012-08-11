@@ -52,6 +52,12 @@ def poststartgame():
     for i, user in enumerate(users_list):
         user.target_number = users_list[ (i + 1) % len(users_list)].number
 
+    for i, user in enumerate(users_list):
+        sendSMS(user.number,
+                "Welcome to the game, your target is: " + users_list[ (i + 1) % len(users_list)].name)
+
+
+
     return 'ok'
 
 @app.route('/gamestatus', methods=['GET'])
