@@ -44,10 +44,8 @@ def receiveSMS():
         message = "you've been removed from the game.. sucker."
         sendSMS(sender_number, message)
 
-        updatetarget(Users[int(sender_number)])
-        UsersKilled[int(sender_number)] = Users[int(sender_number)]
-        sendSMS(sender_number, message)
         updateTarget(Users[int(sender_number)])
+        UsersKilled[int(sender_number)] = Users[int(sender_number)]
         del Users[int(sender_number)]
     else:
         sendSMS(sender_number, "the fuck broah. follow the rules")
