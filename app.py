@@ -13,7 +13,7 @@ client = TwilioRestClient()
 app = Flask(__name__)
 app.debug = True
 
-Users = []
+Users = {}
 
 @app.route('/', methods=['GET', 'POST'])
 def receiveSMS():
@@ -55,13 +55,13 @@ def poststartgame():
         Users[number] = user
 
     users_list = list(Users.values())
-    random.shuffle(user_list)
+    random.shuffle(users_list)
     for i, user in enumerate(users_list):
         user.target_number = users_list[ (i + 1) % len(users_list)].number
 
     for i, user in enumerate(users_list):
         sendSMS(user.number,
-                "Welcome to the game, your target is: " + users_list[ (i - 1) % len(users_list)].name)
+                "Welcome to the game, your target is: " + Users[user.target_number].name)
 
         Users[user.target_number].name
 
@@ -75,4 +75,4 @@ def gamestatus():
 if __name__ == '__main__':
     # Bind to PORT if defined, otherwise default to 5000.
     port = int(os.environ.get('PORT', 5000))
-    app.run(port=port)
+    app.run(host='0.0.0.0', port=port)
