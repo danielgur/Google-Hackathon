@@ -14,17 +14,20 @@ app.debug = True
 Users = []
 
 @app.route('/', methods=['GET', 'POST'])
-def hello():
+def receiveSMS():
     body = request.values.get('Body', '')
     resp = twilio.twiml.Response()
-    message = "Hello, Mobile Monkey.. you just sent: " + body
+    message = "You've been removed from the game.. sucker."
     resp.sms(message)
-
+    user = request.values.get('From', '')
+    print user
+    del users[user]
     return str(resp)
 
 def sendSMS(phone_num, text):
     message = client.sms.messages.create(to=phone_num, from_="+19492163884",
                                      body=text)
+    return message
 
 @app.route('/startgame', methods=['GET'])
 def getstartgame():
