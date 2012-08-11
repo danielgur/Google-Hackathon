@@ -15,16 +15,19 @@ app.debug = True
 
 Users = { 
     17144175062: User(**{
+            "target_name": "daniel gur",
             "target_number": 12169705010,
             "number": 17144175062,
             "name": "Huan"
             }),
     12169705010: User(**{
+            "target_name": "Elissa",
             "target_number": 12165482911,
             "number": 12169705010,
             "name": "daniel gur"
             }),
     12165482911: User(**{
+            "target_name": "Huan",
             "target_number": 17144175062,
             "number": 12165482911,
             "name": "Elissa"
@@ -34,15 +37,13 @@ Users = {
 @app.route('/', methods=['GET', 'POST'])
 def receiveSMS():
     text_received = request.values.get('Body', '')
-    sender_number = request.values.get('from', '')
+    sender_number = request.values.get('From', '')
 
-    if text_received.lower() == 'dead':
-        resp = twilio.twiml.response()
+    if text_received.strip().lower() == 'dead':
         message = "you've been removed from the game.. sucker."
-        resp.sms(message)
-
-        updatetarget(users[int(sender_number)])
-        del users[int(sender_number)]
+        sendSMS(sender_number, message)
+        updateTarget(Users[int(sender_number)])
+        del Users[int(sender_number)]
     else:
         sendSMS(sender_number, "the fuck broah. follow the rules")
 
@@ -61,7 +62,7 @@ def updateTarget(user_killed):
 def sendSMS(phone_num, text):
     from_="+19492163884"
     logging.warn('sending a message from %s to %s with content: %s' % (
-            phone_num, from_, text))
+            from_, phone_num,  text))
             
     message = client.sms.messages.create(to=phone_num, from_=from_,
                                      body=text)
