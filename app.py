@@ -22,7 +22,7 @@ Users = {
     12169705010: User(**{
             "target_number": 12165482911,
             "number": 12169705010,
-            "name": "daniel lior gur"
+            "name": "daniel gur"
             }),
     12165482911: User(**{
             "target_number": 17144175062,
