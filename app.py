@@ -27,6 +27,8 @@ Users = {}
 
 UsersKilled = {}
 
+ShuffledUsers = []
+
 @app.route('/kill', methods=['GET', 'POST'])
 def receiveSMS():
     # Get info of received SMS
@@ -42,6 +44,7 @@ def receiveSMS():
         # Delete dead user from current players
         UsersKilled[sender_number] = dead_user 
         del Users[sender_number]
+        del ShuffledUsers[sender_number]
         message = "you've been removed from the game.. sucker."
         sendSMS(sender_number, message)
     else:
@@ -124,6 +127,7 @@ def poststartgame():
     data = request.values['data']
 
     global Users
+    global ShuffledUsers
     Users = {}
     for line in data.split('\n'):
         line = line.strip()
@@ -142,9 +146,11 @@ def poststartgame():
         except: 
             logging.warn("Catching exception for " + str(user.number) + " bout to delete...")
             del Users[user.number]
+	    del ShuffledUsers[user.number]
             users_list.remove(user)
    
     random.shuffle(users_list)
+    ShuffledUsers = users_list
     for i, user in enumerate(users_list):
         user.target_number = users_list[ (i + 1) % len(users_list)].number
         user.target_name = users_list[ (i + 1) % len(users_list)].name
@@ -159,7 +165,8 @@ def poststartgame():
 
 @app.route('/gamestatus', methods=['GET'])
 def gamestatus():
-    users = [user.serialize() for number, user in Users.items()]
+    global ShufflesUsers
+    users = [user.serialize() for user in ShuffledUsers]
     return json.dumps(users)
 
 if __name__ == '__main__':
