@@ -111,6 +111,7 @@ def receiveSMS():
             if len(Users.keys()) > 2:
                 sendSMS(killer.number, getPartialCongrats() + "Your new target is: " + killer.target_name)
             else:
+                Users = {}
                 winners = ''
                 for user in Users.values():
                     sendSMS(user.number, "You freakin WON! Now you have the flower powers.")
