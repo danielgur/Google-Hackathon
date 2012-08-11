@@ -3,13 +3,32 @@
 	  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
 	  <script>
 		$(document).ready(function(){
-		  var update = function(){}
+		  var users = {}
+		  var update = function(){
+		      $.get('/gamestatus', function(result){ 
+		        console.log('getting status');
+		        // check to see if its different length..
+		        // shouldnt really being using eval but ok..
+		        var new_users = eval(result);
+		        // if so then update the view.. 
+                if( new_users.length != users.length ){
+		           updateDrawing(new_users);
+                   users = new_users;
+		        }
+              });
+		  };
+
+          var updateDrawing = function(){
+		     console.log('updating drawing');
+		     //currently nothing
+          };
 
 		  setInterval(function(){
 		     update();
 		  }, 1000); 
 		});
 	  </script>
+
 </head>
     <body>
 	<table>
