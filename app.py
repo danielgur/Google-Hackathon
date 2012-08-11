@@ -156,45 +156,6 @@ def gaming():
     return bool(Users)
 
 
-@app.route('/fake', methods=['GET'])
-def fake():
-    # this is just to initialize fake users,
-    # so we can test without texting
-    global Users
-    global ShuffledUsers
-    Users = {
-        17144175062: User(**{
-                "target_name": "daniel gur",
-                "target_number": 12169705010,
-                "number": 17144175062,
-                "name": "Huan",
-                "secret_word": "scale"
-                }),
-        12169705010: User(**{
-                "target_name": "Elissa",
-                "target_number": 12165482911,
-                "number": 12169705010,
-                "name": "daniel gur",
-                "secret_word": "robust"
-                }),
-        12165482911: User(**{
-                "target_name": "Huan",
-                "target_number": 17144175062,
-                "number": 12165482911,
-                "name": "Elissa",
-                "secret_word": "dynamic"
-                }),
-        14822887950: User(**{
-                "target_name": "Huan #2",
-                "target_number": 12165482911,
-                "number": 14822887950,
-                "name": "daniel diaz"
-                }),
-        }
-    ShuffledUsers = Users.values()
-    return redirect('/')
-
-
 @app.route('/', methods=['GET'])
 def index():
     if not gaming():
