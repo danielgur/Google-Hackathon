@@ -11,4 +11,5 @@ class User(object):
     def serialize(self):
         return dict(name=self.name, 
                     number=self.number, 
-                    target_number=self.target_number)
+                    target_number=self.target_number,
+		    target_name=self.target_name)

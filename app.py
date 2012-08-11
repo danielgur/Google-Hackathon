@@ -22,7 +22,7 @@ Users = {
     12169705010: User(**{
             "target_number": 12165482911,
             "number": 12169705010,
-            "name": "daniel lior gur"
+            "name": "daniel gur"
             }),
     12165482911: User(**{
             "target_number": 17144175062,
@@ -33,18 +33,19 @@ Users = {
 
 @app.route('/', methods=['GET', 'POST'])
 def receiveSMS():
-    body = request.values.get('Body', '')
+    text_received = request.values.get('Body', '')
+    sender_number = request.values.get('from', '')
 
-    resp = twilio.twiml.Response()
-    message = "You've been removed from the game.. sucker."
-    resp.sms(message)
+    if text_received.lower() == 'dead':
+        resp = twilio.twiml.response()
+        message = "you've been removed from the game.. sucker."
+        resp.sms(message)
 
-    # Get user num who just died and updateTarget
-    dead_user_phone_num = request.values.get('From', '')
-    updateTarget(Users[int(dead_user_phone_num)])
-    print dead_user_phone_num
+        updatetarget(users[int(sender_number)])
+        del users[int(sender_number)]
+    else:
+        sendSMS(sender_number, "the fuck broah. follow the rules")
 
-    del Users[int(dead_user_phone_num)]
     return str(resp)
 
 def updateTarget(user_killed):
