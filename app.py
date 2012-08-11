@@ -14,7 +14,8 @@ import os
 import random
 import twilio.twiml
 
-from flask import Flask, request, render_template, redirect
+from flask import Flask, request, render_template, redirect, url_for
+from flask import send_from_directory
 from User import User
 from twilio.rest import TwilioRestClient
 
@@ -23,6 +24,11 @@ client = TwilioRestClient()
 app = Flask(__name__)
 app.debug = True
 
+
+@app.route('/favicon.ico')
+def favicon():
+    return send_from_directory(os.path.join(app.root_path, 'static'),
+                               'favicon.ico', mimetype='image/vnd.microsoft.icon')
 Users = {}
 
 UsersKilled = {}
@@ -111,6 +117,7 @@ def receiveSMS():
             if len(Users.keys()) > 2:
                 sendSMS(killer.number, getPartialCongrats() + "Your new target is: " + killer.target_name)
             else:
+                Users = {}
                 winners = ''
                 for user in Users.values():
                     sendSMS(user.number, "You freakin WON! Now you have the flower powers.")
