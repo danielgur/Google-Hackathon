@@ -1,66 +1,106 @@
 <html>
     <head><title>Status the game</title>
 	  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
-	  <script src="http://d3js.org/d3.v2.js"></script>
-		  <script>
-		  console.log(3);
-		  $(document).ready(function(){
-		  var users = {}
-		  var update = function(){
-		      $.get('/gamestatus', function(result){ 
-		        console.log('getting status');
-		        // check to see if its different length..
-		        // shouldnt really being using eval but ok..
-		        var new_users = eval(result);
-		        // if so then update the view.. 
-                if( new_users.length != users.length ){
-		           updateDrawing(new_users);
-                   users = new_users;
-				}
-              });
-		  };
+	  <script src="https://raw.github.com/DmitryBaranovskiy/raphael/master/raphael-min.js"></script>
+	 <script>
+	 $(document).ready(function(){
+	         document.bgColor = "#333";
+			 var users = {}
+			 var update = function(){
+				 $.get('/gamestatus', function(result){ 
+						 console.log('getting status');
+						 // check to see if its different length..
+						 // shouldnt really being using eval but ok..
+						 var new_users = eval(result);
+						 // if so then update the view.. 
+						 if( new_users.length != users.length ){
+							 Draw(new_users);
+							 users = new_users;
+						 }
+					 });
+			 };
 
-		  y = '{"name":"flare","children":[{"name":"analytics","children":[{"name":"cluster","children":[{"name":"AgglomerativeCluster","size":3938},{"name":"CommunityStructure","size":3812},{"name":"HierarchicalCluster","size":6714},{"name":"MergeEdge","size":743}]},{"name":"graph","children":[{"name":"BetweennessCentrality","size":3534},{"name":"LinkDistance","size":5731},{"name":"MaxFlowMinCut","size":7840},{"name":"ShortestPaths","size":5914},{"name":"SpanningTree","size":3416}]},{"name":"optimization","children":[{"name":"AspectRatioBanker","size":7074}]}]},{"name":"animate","children":[{"name":"Easing","size":17010},{"name":"FunctionSequence","size":5842},{"name":"interpolate","children":[{"name":"ArrayInterpolator","size":1983},{"name":"ColorInterpolator","size":2047},{"name":"DateInterpolator","size":1375},{"name":"Interpolator","size":8746},{"name":"MatrixInterpolator","size":2202},{"name":"NumberInterpolator","size":1382},{"name":"ObjectInterpolator","size":1629},{"name":"PointInterpolator","size":1675},{"name":"RectangleInterpolator","size":2042}]},{"name":"ISchedulable","size":1041},{"name":"Parallel","size":5176},{"name":"Pause","size":449},{"name":"Scheduler","size":5593},{"name":"Sequence","size":5534},{"name":"Transition","size":9201},{"name":"Transitioner","size":19975},{"name":"TransitionEvent","size":1116},{"name":"Tween","size":6006}]},{"name":"data","children":[{"name":"converters","children":[{"name":"Converters","size":721},{"name":"DelimitedTextConverter","size":4294},{"name":"GraphMLConverter","size":9800},{"name":"IDataConverter","size":1314},{"name":"JSONConverter","size":2220}]},{"name":"DataField","size":1759},{"name":"DataSchema","size":2165},{"name":"DataSet","size":586},{"name":"DataSource","size":3331},{"name":"DataTable","size":772},{"name":"DataUtil","size":3322}]}]}';
+			 // vector that the arrow the towards
+			 Raphael.fn.arrow = function (x, y, x_vect, y_vect){
+				 var width = 30;
+				 var length = 70;
+				 var arrow_dist = 20;
+				 var commands = [ "M" + x + " " + (y + length/2),
+								  "L" + (x + width/2) + " " + (y + length/2),
+								  "L" + (x + width/2) + " " + (y - arrow_dist),
+								  "L" + ((x + width/2) + 10) + " " + (y - arrow_dist),
+								  "L" + x + " " + (y - length),
+								  "L" + ((x - width/2) - 10) + " " + (y - arrow_dist),
+								  "L" + (x - width/2) + " " + (y - arrow_dist),
+								  "L" + (x - width/2) + " " + (y + length/2),
+								  "L" + x + " " + (y + length/2)
+								  ]
+				 var command = "";
+				 for(var i = 0; i < commands.length; i++){
+					 command += commands[i];
+				 }
+				 var path = this.path(command);
+				 var rotation = (180 / Math.PI) * Math.acos(x_vect / Math.sqrt(x_vect * x_vect + y_vect * y_vect));
+				 if( y_vect > 0 ){
+					 
+				 } else {
+					 rotation = 360 - rotation;
+				 }
+				 rotation += 90;
+				 path.rotate(rotation);
 
-          var updateDrawing = function(){
-		    console.log('updating drawing');
-		    //currently nothing
-			var radius = 960 / 2;
-      		var tree = d3.layout.tree().size([360, radius - 120]).separation(function(a, b) { return (a.parent == b.parent ? 1 : 2) / a.depth; });
-		    var diagonal = d3.svg.diagonal.radial().projection(function(d) { return [d.y, d.x / 180 * Math.PI]; });
-		    var vis = d3.select("#chart").append("svg").attr("width", radius * 2).attr("height", radius * 2 - 150).append("g").attr("transform", "translate(" + radius + "," + radius + ")");
-			// var json = {{Users|safe}}
-			var json = JSON.parse(y);
-			var nodes = tree.nodes(json);
-			var link = vis.selectAll("path.link").data(tree.links(nodes)).enter().append("path").attr("class", "link").attr("d", diagonal);
-			var node = vis.selectAll("g.node").data(nodes).enter().append("g").attr("class", "node").attr("transform", function(d) { return "rotate(" + (d.x - 90) + ")translate(" + d.y + ")"; });
-			
-			node.append("circle").attr("r", 4.5);
-			
-			node.append("text").attr("dx", function(d) { return d.x < 180 ? 8 : -8; }).attr("dy", ".31em").attr("text-anchor", function(d) { return d.x < 180 ? "start" : "end"; }).attr("transform", function(d) { return d.x < 180 ? null : "rotate(180)"; }).text(function(d) { return d.name; });
-		  };
+				 return path;
 
-		  setInterval(function(){
-				  //update();
-			  }, 1000); 
+			 }
 
-		  updateDrawing();
-			  });
+			 var Draw = function(users){
+				 r = Raphael("holder", 700, 700);
+				 var radius = 250;
+				 var circle_radius = 70;
+				 var origin = [350, 350];
+				 var length = users.length;
+				 var targets = r.set();
+				 var labels = r.set();
+				 var arrows = r.set();
+				 for(var i = 0; i < length; i++){
+					 var offset = [radius * Math.cos(i * 2 * Math.PI / length), 
+								   radius * Math.sin(i * 2 * Math.PI / length)];
+					 console.log(offset);
+					 var user_center = [origin[0] + offset[0], origin[1] + offset[1]];
+					 var circle = r.circle(user_center[0], user_center[1], circle_radius);
+					 var label = r.text(user_center[0] - (circle_radius / 3), user_center[1], users[i].name);
+
+					 var arrow_offset = [radius * Math.cos((i + .5) * 2 * Math.PI / length) * .95, 
+										 radius * Math.sin((i + .5) * 2 * Math.PI / length) * .95];
+					 
+					 var arrow = r.arrow(origin[0] + arrow_offset[0], origin[1] + arrow_offset[1],
+										 radius * Math.cos((i+1) * 2 * Math.PI / length) * .9 - radius * Math.cos((i) * 2 * Math.PI / length) * .9, 
+										 radius * Math.sin((i+1) * 2 * Math.PI / length) * .9 - radius * Math.sin((i) * 2 * Math.PI / length) * .9);
+					 arrows.push(arrow);
+					 labels.push(label);
+					 targets.push(circle);
+				 }
+				 arrows.attr({fill: "red", stroke: "#fff", "stroke-dasharray": "- ", opacity: .2});
+				 targets.attr({fill: "#000", stroke: "#fff", "stroke-dasharray": "- ", opacity: .2});
+				 labels.attr({font: "12px Fontin-Sans, Arial", fill: "#fff", "text-anchor": "start"});
+			 };
+			 
+			 update();
+
+			 //setInterval(function(){
+			 //  update();
+			 //}, 1000); 
+
+		    //updateDrawing();
+		 });
 	  </script>
 
 
 
 </head>
     <body>
-	<table>
-	<tr>
-		<td>User</td>
-		<td>Looking for</td></tr>
-	{% for user in Users %}	  
-		 <tr><td>{{user.name}}<td>
-		 <td>{{user.target_name}}<td></tr>	
-	{% endfor %}
-	</table>
-		<div id="chart"></div>
+		  <center>
+		     <div id="holder"></div>
+     	 </center>
    </body>
 </html>
