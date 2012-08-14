@@ -1,4 +1,5 @@
 from twilio.rest import TwilioRestClient
+import random
 import models
 client = TwilioRestClient()
 
@@ -8,8 +9,8 @@ WORDS = {"blue", "robust", "scalable", "dynamic", "red", "amigo", "respect", "al
          "dumbledore", "gatsby", "google", "bigtable", "megastore", "git", "sweet", "cheese",
          "gouda", "ferr", "china"}
 
-PARTIAL_CONGRATS = {"Nice kill", "Great hunt", "Get more blood on those hands", "Headshot",
-                    "MOFO is dead", "Dead", "Good work you beast"}
+PARTIAL_CONGRATS = {"Nice kill!", "Great hunt!", "Get more blood on those hands!", "Headshot!",
+                    "MOFO is dead!", "Dead!", "Good work you beast!"}
 
 def getPartialCongrats():
     return random.choice(PARTIAL_CONGRATS)
@@ -33,6 +34,6 @@ def parseUsers(string):
     return users
 
 def generateColor():
-    return (random.randint(0, 255), 
-            random.randint(0, 255), 
-            random.randint(0, 255))
+    return str(random.randint(0, 255), 
+               random.randint(0, 255), 
+               random.randint(0, 255))

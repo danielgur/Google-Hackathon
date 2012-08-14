@@ -81,7 +81,7 @@ class User(object):
                         target_name=self.target.number,
                         kill_count=self.kill_count)
 
-    def kill(killer, target):
+    def kills(killer, target):
         kill.target = target.target
         del target
 
@@ -91,6 +91,3 @@ class User(object):
     def __del__(self):
         self.getGame().deleteUser(self)
     
-    def __eq__(self, other):
-        return (self.name == other.name and 
-                self.number == other.number)
