@@ -1,42 +1,21 @@
 <html>
-	<style type = "text/css">
-	h1 { color:white; 
-	font-family: "your ideal typeface", Verdana, sans-serif;
-	font-height: 300px;
-	line-height:
-	line-height: 300px;
-}
-	#input {
-	    border: 5px solid white; 
-    	-webkit-box-shadow: 
-     	 inset 0 0 8px  rgba(0,0,0,0.1),
-            0 0 16px rgba(0,0,0,0.1); 
-    	-moz-box-shadow: 
-      	inset 0 0 8px  rgba(0,0,0,0.1),
-            0 0 16px rgba(0,0,0,0.1); 
-    	box-shadow: 
-      	inset 0 0 8px  rgba(0,0,0,0.1),
-            0 0 16px rgba(0,0,0,0.1); 
-    	padding: 15px;
-    	background: rgba(255,255,255,0.25);
-    	margin: 0 0 10px 0;	
-
-	}
-	</style>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+	<style type="text/css" src="{{ url_for('static', 'create.css' }}"></script>
+	<style src="{{ url_for('static', 'create.js' }}"></script>
 	
     <head><title>Input to start game</title></head>
     <body style="text-align:center; background: #333;">
 	<h1>Assassinability</h1>
 	<form name="myform">
-       		<input type = "text" class = "number" id = "input" value = "12169705010" />
-		<input type = "text" class = "name" id = "input" value ="daniel gur" /><br />
-       		<input type = "text" class = "number" id = "input" value = "17144175062" />
-		<input type = "text" class = "name" id = "input"  value = "Huan" /><br />
-      		<input type = "text" class = "number" id = "input" value = "12165482911" />
-		<input type = "text" class = "name" id = "input"  value = "Elissa" /><br />
-		<div id = "newEntries"></div>
-		<input type = "button" onclick = "addNew();" value = "Add new entry">
-                <input type= "button" onclick = "processData();" value="Submit" />
+      <input type="text" class="number" id="input" value="12169705010" />
+	  <input type="text" class="name" id="input" value ="daniel gur" /><br />
+      <input type="text" class="number" id="input" value="17144175062" />
+	  <input type="text" class="name" id="input"  value="Huan" /><br />
+      <input type="text" class="number" id="input" value="12165482911" />
+	  <input type="text" class="name" id="input"  value="Elissa" /><br />
+	  <div id="newEntries"></div>
+	  <input type="button" id="add_new" value="Add new entry">
+      <input type="button" id="submit" value="Submit" />
 	</form>
 
     <!-- TODO (esadac): go here :)  -->
@@ -51,26 +30,4 @@
    <p>8. You will be notified when the game is over.</p>
    
    </body>
-	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
-	<script>
-		function addNew(){
-		$('#newEntries').append($('<input type = "text" class = "number" id = "input" /> <input type = "text" class = "name" id = "input" /><br />'));
-		  console.log("add news");
-		}
-		function processData(){
-			var result = "";
-	      	   	var numElements = document.getElementsByClassName("number");
-	      	   	var nameElements = document.getElementsByClassName("name");
-	       		n = numElements.length;
-			for (var i = 0; i < n; i++) {
-                var currNum = numElements[i].value;
-                var currName = nameElements[i].value
-                if(!($.trim(currNum).length === 0 && $.trim(currName).length === 0))
-			        result += currNum + "," + currName + "\n";
-			}
-		$.post("/startgame", {data: result}, function(){
-								window.location = "/";
-								});
-		}
-	</script>
 </html>

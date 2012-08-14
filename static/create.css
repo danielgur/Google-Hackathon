@@ -1,0 +1,23 @@
+h1 { color:white; 
+	font-family: "your ideal typeface", Verdana, sans-serif;
+	font-height: 300px;
+	line-height:
+	line-height: 300px;
+}
+
+#input {
+	    border: 5px solid white; 
+    	-webkit-box-shadow: 
+     	 inset 0 0 8px  rgba(0,0,0,0.1),
+            0 0 16px rgba(0,0,0,0.1); 
+    	-moz-box-shadow: 
+      	inset 0 0 8px  rgba(0,0,0,0.1),
+            0 0 16px rgba(0,0,0,0.1); 
+    	box-shadow: 
+      	inset 0 0 8px  rgba(0,0,0,0.1),
+            0 0 16px rgba(0,0,0,0.1); 
+    	padding: 15px;
+    	background: rgba(255,255,255,0.25);
+    	margin: 0 0 10px 0;	
+
+}

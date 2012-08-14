@@ -37,7 +37,7 @@ class Game(object):
         del self.usersByNumber[user.number]
         del self.GamesByUserNumber[user.number]
 
-    def assignTargets(self)
+    def assignTargets(self):
         assert self._shuffledUsers is None, "Users are already shuffled!"
         self._shuffledUsers = random.shuffle(self.usersByNumber.values())
         for i, user in enumerate(self._shuffledUsers):
@@ -76,9 +76,9 @@ class User(object):
         else:
             return dict(name=self.name,
                         number=self.number,
-                        secret_word=self.secret_word
+                        secret_word=self.secret_word,
                         target_number=self.target.number,
-                        target_name=self.target.number
+                        target_name=self.target.number,
                         kill_count=self.kill_count)
 
     def kill(killer, target):
