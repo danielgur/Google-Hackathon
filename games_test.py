@@ -13,7 +13,7 @@ class gamesTest(unittest.TestCase):
 
     def testAddUser(self):
         game = Game()
-        user = User('a', 1)
+        user = TestUser('a', -1)
         game.addUser(user)
 
         self.assertEquals(user.getGame(), game)
@@ -21,7 +21,7 @@ class gamesTest(unittest.TestCase):
 
     def testAssignTargets(self):
         game = Game()
-        users = User('a', 0), User('b', 1), User('c', 2)
+        users = TestUser('a', 0), TestUser('b', -1), TestUser('c', -2)
 
         for user in users:
             game.addUser(user)
@@ -40,7 +40,7 @@ class gamesTest(unittest.TestCase):
         
     def testAssignWords(self):
         game = Game()
-        users = User('a', 0), User('b', 1), User('c', 2)
+        users = TestUser('a', 0), TestUser('b', -1), TestUser('c', -2)
 
         for user in users:
             game.addUser(user)
@@ -54,7 +54,7 @@ class gamesTest(unittest.TestCase):
         
     def testKillUser(self):
         game = Game()
-        users = User('a', 0), User('b', 1), User('c', 2)
+        users = TestUser('a', 0), TestUser('b', -1), TestUser('c', -2)
 
         for user in users:
             game.addUser(user)
