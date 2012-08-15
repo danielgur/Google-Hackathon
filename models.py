@@ -86,6 +86,7 @@ class User(object):
 
     def kills(killer, target):
         killer.target = target.target
+        utils.sendSMS(target.number, killer.name + " killed you! You've been removed from the game.. sucker.")
         target.delete()
 
     def isInGame(self):
@@ -96,7 +97,6 @@ class User(object):
 
     def delete(self):
         self.getGame().deleteUser(self)
-
 
 class TestUser(User):
     

@@ -61,10 +61,8 @@ $(document).ready(function(){
 
 					setInterval(function(){
 							get(function(data){
-									new_users = JSON.parse(data);
+									new_users = JSON.parse(data).aliveUsers;
 									if (new_users.length < users.length && users.length > 2){
-										console.log(users);
-										console.log(new_users);
 
 										// look at old users and delete the ones
 										// that are not in new_users

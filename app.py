@@ -14,7 +14,6 @@ import models
 import os
 import twilio
 import utils
-import views
 
 from flask import Flask
 from flask import request, render_template, redirect, send_from_directory
@@ -44,7 +43,7 @@ def receiveSMS():
             killer.kills(target)
             if len(users) > 2:
                 return utils.sendSMS(killers_number, utils.getPartialCongrats() + 
-                               "Your new target is: " + killer.target.name)
+                               " Your new target is: " + killer.target.name)
             else:
                 for number, user in users.iteritems():
                     utils.sendSMS(number, "You freakin WON! Now you have the flower powers.")
