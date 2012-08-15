@@ -1,18 +1,20 @@
 <html>
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
-  <script src="{{ url_for('static', 'create.js' }}"></script>
-  <style type="text/css" src="{{ url_for('static', 'create.css' }}"></style>
+  <script src="{{ url_for('static', filename='create.js') }}"></script>
+  <style type="text/css" src="{{ url_for('static', filename='create.css') }}"></style>
 
   <head><title>Input to start game</title></head>
   <body style="text-align:center; background: #333;">
 	<h1>Assassinability</h1>
 	<form name="myform">
-      <input type="text" class="number" id="input" value="12169705010" />
+      <input type="text" class="number" id="input" value="-1216970501" />
 	  <input type="text" class="name" id="input" value ="daniel gur" /><br />
-      <input type="text" class="number" id="input" value="17144175062" />
+      <input type="text" class="number" id="input" value="-1714417506" />
 	  <input type="text" class="name" id="input"  value="Huan" /><br />
-      <input type="text" class="number" id="input" value="12165482911" />
+      <input type="text" class="number" id="input" value="-1216548291" />
 	  <input type="text" class="name" id="input"  value="Elissa" /><br />
+      <input type="text" class="number" id="input" value="-1216548221" />
+	  <input type="text" class="name" id="input"  value="Enrique" /><br />
 	  <div id="newEntries"></div>
 	  <input type="button" id="add_new" value="Add new entry">
       <input type="button" id="submit" value="Submit" />
@@ -27,6 +29,13 @@
 	<p>6. You will get a new target.</p>
 	<p>7. Keep on killing.</p>
 	<p>8. You will be notified when the game is over.</p>
-   
+	
+	<!-- TODO: move this to a more apporiate place -->
+	<div>
+	  <h1>Currently Ongoing Games</h1>
+	  {% for game in games %}
+	     <a href="/games/{{game.name}}">{{game.name}}</a>
+	  {% endfor %}
+	</div>
   </body>
 </html>

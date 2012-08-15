@@ -2,9 +2,11 @@
     <head><title>Status the game</title>
 	  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
 	  <script src="https://raw.github.com/DmitryBaranovskiy/raphael/master/raphael-min.js"></script>
+	  <script>
+		var gameName = "{{ game_name }}";
+	  </script>
 	  <script src="{{ url_for('static', filename='dashboard.js') }}"></script>
 	</head>
-
     <body style="text-align:center; background: #333;">
 	  <center>
 		<div id="holder"></div>

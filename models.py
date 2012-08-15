@@ -5,7 +5,6 @@ class Game(object):
     # Game by game name
     GamesByGameName = {}
 
-    # Should we allow users to be in more than one game?
     GamesByUserNumber = {}
         
     def __init__(self, name=None):
@@ -25,14 +24,14 @@ class Game(object):
     def deadUsers(self):
         return self._deadUsers
         
-    @classmethod
-    def flushAllGames(cls):
+    @staticmethod
+    def flushAllGames():
         Game.GamesByGameName = {}
         Game.GamesByUserNumber = {}
 
     @staticmethod
     def getGame(name):
-        return self.Games.get(name)
+        return Game.GamesByGameName[name]
 
     def addUser(self, user):
         self.usersByNumber[user.number] = user
@@ -64,27 +63,48 @@ class Game(object):
 
 
 class User(object):
-    
+    UsersByNumber = {}
+
     def __init__(self, name, number, secret_word=None, target=None):
         self.name = name
         self.number = int(number)
         self.secret_word = secret_word
         self.target = target
         self.game_name = None
+        User.UsersByNumber[self.number] = self
 
-    def serialize(self, anon=True):
+    def serialize(self):
         return dict(name=self.name,
                     number=self.number,
                     secret_word=self.secret_word,
                     target_number=self.target.number,
                     target_name=self.target.number)
 
+    @staticmethod
+    def getUser(number):
+        return User.UsersByNumber[number]
+
     def kills(killer, target):
         killer.target = target.target
         target.delete()
+
+    def isInGame(self):
+        return self.number in Game.GamesByUserNumber
 
     def getGame(self):
         return Game.GamesByUserNumber[self.number]
 
     def delete(self):
         self.getGame().deleteUser(self)
+
+
+class TestUser(User):
+    
+    def __init__(self, *args, **kwargs):
+        User.__init__(self, *args, **kwargs)
+        self.messages = []
+
+    def serialize(self):
+        d = User.serialize(self)
+        d.update(messages=self.messages)
+        return d

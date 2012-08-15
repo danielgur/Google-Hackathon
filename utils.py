@@ -32,6 +32,9 @@ def parseUsers(string):
         line = line.strip()
         if not line: continue
         number, name = line.split(',')
-        user = models.User(name=name, number=number)
+        if int(number) <= 0:
+            user = models.TestUser(name=name, number=number)
+        else:
+            user = models.User(name=name, number=number)
         users.add(user)
     return users

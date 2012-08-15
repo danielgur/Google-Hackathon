@@ -8,17 +8,21 @@
 # 	Huan Do
 #
 
-import os
-import views
-import models
 import json
+import logging
+import models
+import os
+import twilio
+import utils
+import views
 
 from flask import Flask
 from flask import request, render_template, redirect, send_from_directory
 
+games_to_delete = set()
+
 app = Flask(__name__)
 app.debug = True
-
 
 @app.route('/favicon.ico')
 def favicon():
@@ -31,86 +35,102 @@ def receiveSMS():
     killers_number = int(request.values.get('From', ''))
     game = models.Game.GamesByUserNumber[killers_number]
 
+    users = game.getUsersByNumber()
+    killer = users[killers_number]
+    killer.messages.append(killer.name + ": " + word)
     if word in utils.WORDS:
-        users = game.getUsersByNumber
-        killer = users[killers_number]
-        target = kill.target
+        target = killer.target
         if word == target.secret_word:
             killer.kills(target)
             if len(users) > 2:
-                return sendSMS(killers_number, utils.getPartialCongrats() + 
+                return utils.sendSMS(killers_number, utils.getPartialCongrats() + 
                                "Your new target is: " + killer.target.name)
             else:
-                for number, user in users:
-                    sendSMS(number, "You freakin WON! Now you have the flower powers.")
-                winners = ', '.join(users)
-                for number, user in game.deadUsers:
-                    sendSMS(user.number, "Loser. Congratulate these bad boys: " + winners)
-                game.delete()
+                for number, user in users.iteritems():
+                    utils.sendSMS(number, "You freakin WON! Now you have the flower powers.")
+                winners = ', '.join(user.name for user in users.values())
+                for user in game.deadUsers():
+                    utils.sendSMS(user.number, "Loser. Congratulate these bad boys: " + winners)
+                games_to_delete.add(game)
                 return 'ok'
         
-    return sendRulesSMS(killers_number)
+    return utils.sendRulesSMS(killers_number)
 
 
 @app.route('/', methods=["GET"])
 def createGame():
-    return render_template('create_game.html')
+    return render_template('create_game.html', games=models.Game.GamesByGameName.values())
 
 
 @app.route('/startgame', methods=['POST'])
 def startGame():
+    global games_to_delete
+    for game in games_to_delete:
+        game.delete()
+    games_to_delete = set()
     game = models.Game()
     data = request.values['data']
     users = utils.parseUsers(data)
-    bad_numbers = set()
+    bad_users = set()
     for user in users:
-        if user.getGame() is not None:
-            sendSMS(user.number, "Dude you are already in a game!")
+        if user.isInGame():
+            utils.sendSMS(user.number, "Dude you are already in a game!")
             logging.warn("User: {0} {1} is already in a game!".format(
                     user.name, user.number))
-            bad_numbers.add(user.number)
+            bad_users.add(user)
         else:
             try:
-                sendSMS(user.number, "You have entered the gameroom: %s "
-                        "Get ready. It's about to get real. "
-                        "Your target will be sent shortly!" % game.name)
-            except:
+                utils.sendSMS(user.number, "Get ready. It's about to get real. "
+                              "Your target will be sent shortly!")
+            except twilio.TwilioRestException:
                 logging.warn("User: {0} has an bad number: {1}".format(
                         user.name, user.number))
-                bad_numbers.add(user.number)
+                bad_users.add(user)
     
-    for bad_number in bad_numbers:
-        del users[bad_number]
+    for bad_user in bad_users:
+        users.remove(bad_user)
 
     if len(users) <= 2:
+        message = "Sorry, there are not enough valid players. The game cannot start."
         for user in users:
-            return sendSMS(user.number, "Sorry, there are not enough valid players. "
-                           "the game cannot start.")
-            
+            utils.sendSMS(user.number, message)
+        return message
+
     else:
         for user in users:
             game.addUser(user)
-        game.assignWords()
-        game.assignTargets()
+        game.assignTargetsAndWords()
         for user in users:
             message = ("Welcome to the game, your target is: {0}. "
                        "Your secret word is: {1}".format(user.target.name, user.secret_word))
-            sendSMS(user.number, message)
-        return redirect("/games/" + game.name)
+            utils.sendSMS(user.number, message)
+
+        testing = any(user.number <= 0 for user in users)
+        if testing:
+            return "/test/" + game.name
+        else:
+            return "/games/" + game.name
 
 
-@app.route('/gamestatus', methods=['GET'])
-def gameStatus():
-    game_name = request.values['name']
-    password = request.values.get('password')
+@app.route('/gamestatus/<game_name>', methods=['GET'])
+def gameStatus(game_name):
     game = models.Game.getGame(game_name)
-    anon = (game.password == password)
-    return json.dumps([user.serialize(anon=anon) for user in 
-                       models.Game.getGame(game_name).getKillList()])
+    return json.dumps({'aliveUsers': [user.serialize() for user in 
+                                      models.Game.getGame(game_name).getKillList()],
+                       'deadUsers': [user.serialize() for user in
+                                     models.Game.getGame(game_name).deadUsers()]})
+                           
+                           
+                           
+                           
 
 @app.route('/games/<game_name>')
 def dashboard(game_name):
     return render_template('dashboard.html', game_name=game_name)
+
+@app.route('/test/<game_name>')
+def test_dashboard(game_name):
+    return render_template('testdashboard.html', game_name=game_name)
 
 
 if __name__ == '__main__':

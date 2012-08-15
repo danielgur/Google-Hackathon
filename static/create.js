@@ -14,6 +14,12 @@ $(document).ready(function(){
 						if(!($.trim(currNum).length === 0 && $.trim(currName).length === 0))
 							result += currNum + "," + currName + "\n";
 				}
-				$.post("/startgame", {data: result});
+				$.post("/startgame", {data: result}, function(things){
+						if (things.length > 20){
+							alert(things);
+						} else {
+							window.location = things;
+						}
+					});
 			});
 	});

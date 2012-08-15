@@ -8,13 +8,15 @@ $(document).ready(function(){
 		var arrows = paper.set();
 		
 		var get = function(cb){
-			$.get('/gamestatus', cb);
+			$.get('/gamestatus/' + gameName, cb);
 		}
 		
 		var init = function(){
 			var circle_radius = 70;
 			get(function(data){
-					users = JSON.parse(data);
+					var dataed = JSON.parse(data);
+					users = dataed.aliveUsers;
+					deadusers = dataed.deadUsers;
 					for(var i = 0; i < users.length; i++){
 						var user = users[i];
 						var circle = paper.circle(Math.random() * paper_width,
