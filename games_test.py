@@ -1,10 +1,11 @@
-from unittest import TestCase
-from mockito import when, verify, mock, verify_all
+import unittest
+from mockito import when, verify, mock, unstub
 from models import *
 
-class gamesTest(TestCase):
+class gamesTest(unittest.TestCase):
 
     def tearDown(self):
+        Game.flushAllGames()
         unstub()
 
     def testCreate(self):
@@ -13,7 +14,7 @@ class gamesTest(TestCase):
     def testAddUser(self):
         game = Game()
         user = User('a', 1)
-        game.addUser(User('a', 1))
+        game.addUser(user)
 
         self.assertEquals(user.getGame(), game)
         self.assertEquals(game.usersByNumber[user.number], user)
@@ -25,17 +26,17 @@ class gamesTest(TestCase):
         for user in users:
             game.addUser(user)
 
-        self.assertEquals(game.getKillList, None)
+        self.assertEquals(game.getKillList(), None)
 
-        game.assignTargets()
+        game.assignTargetsAndWords()
         self.assertEquals(len(game.getKillList()), 3)
         
         user0, user1, user2 = game.getKillList()
         self.assertTrue(user0.target == user1)
         self.assertTrue(user1.target == user2)
-        self.assertTrue(user2.target == user3)
+        self.assertTrue(user2.target == user0)
 
-        self.assertRaises(AssertionError, game.assignTargets)
+        self.assertRaises(AssertionError, game.assignTargetsAndWords)
         
     def testAssignWords(self):
         game = Game()
@@ -47,9 +48,9 @@ class gamesTest(TestCase):
         for user in users:
             self.assertEquals(user.secret_word, None)
             
-        game.assignWords()
+        game.assignTargetsAndWords()
         for user in users:
-            self.assertTrue(isinstance(user.secret_word, str))
+            self.assertIsInstance(user.secret_word, str)
         
     def testKillUser(self):
         game = Game()
@@ -57,25 +58,23 @@ class gamesTest(TestCase):
 
         for user in users:
             game.addUser(user)
-            
-        game.assignTargets()
-        
+
+        game.assignTargetsAndWords()
+
         killList = game.getKillList()
         killer = killList[0]
         target = killer.target
 
-        self.assertEquals(len(killList), 3)
-        self.assertContains(target.number, Game.GamesByUserNumber)
-        self.assertEmpty(game.deadUsers())
-
         killer.kills(target)
 
         self.assertEquals(len(killList), 2)
-        self.assertNotContains(target, killList)
-        self.assertNotContains(target.number, Game.GamesByUserNumber)
-        self.assertContains(target, game.deadUsers())
+        self.assertNotIn(target, killList)
+        self.assertNotIn(target.number, Game.GamesByUserNumber)
+        self.assertIn(target, game.deadUsers())
         
         user0, user1 = game.getKillList()
-        self.assertEquals(user0.target, user1.target)
-        self.assertEquals(user1.target, user0.target)
+        self.assertEquals(user0.target, user1)
+        self.assertEquals(user1.target, user0)
         
+if __name__ == '__main__':
+    unittest.main()

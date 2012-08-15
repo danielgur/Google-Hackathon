@@ -17,14 +17,19 @@ class Game(object):
         self._shuffledUsers = None
         self.GamesByGameName[self.name] = self
 
-    def __del__(self):
-        for number, user in self.userByNumber.iteritems():
-            del GameByUserNumber[number]
-        del GamesByGameName[game.name]
+    def delete(self):
+        for number, user in self.usersByNumber.iteritems():
+            del Game.GamesByUserNumber[number]
+        del Game.GamesByGameName[self.name]
 
     def deadUsers(self):
         return self._deadUsers
         
+    @classmethod
+    def flushAllGames(cls):
+        Game.GamesByGameName = {}
+        Game.GamesByUserNumber = {}
+
     @staticmethod
     def getGame(name):
         return self.Games.get(name)
@@ -36,17 +41,17 @@ class Game(object):
     def deleteUser(self, user):
         del self.usersByNumber[user.number]
         del self.GamesByUserNumber[user.number]
+        del self._shuffledUsers[self._shuffledUsers.index(user)]
+        self._deadUsers.add(user)
 
-    def assignTargets(self):
+    def assignTargetsAndWords(self):
         assert self._shuffledUsers is None, "Users are already shuffled!"
-        self._shuffledUsers = random.shuffle(self.usersByNumber.values())
-        for i, user in enumerate(self._shuffledUsers):
-            user.target = self._shuffledUsers[(i+1) % len(self._shuffledUsers)]
-
-    def assignWords(self):
+        self._shuffledUsers = self.usersByNumber.values()
+        random.shuffle(self._shuffledUsers)
         sample = random.sample(utils.WORDS, len(self.usersByNumber))
-        for user, word in zip(self._shuffledUsers, sample):
+        for i, (user, word) in enumerate(zip(self._shuffledUsers, sample)):
             user.secret_word = word
+            user.target = self._shuffledUsers[(i+1) % len(self._shuffledUsers)]
 
     def getKillList(self):
         return self._shuffledUsers
@@ -62,32 +67,24 @@ class User(object):
     
     def __init__(self, name, number, secret_word=None, target=None):
         self.name = name
-        self.color = utils.generateColor()
-        self.kill_count = 0
         self.number = int(number)
         self.secret_word = secret_word
         self.target = target
         self.game_name = None
 
     def serialize(self, anon=True):
-        if anon:
-            return dict(kill_count=self.kill_count,
-                        color=self.color)
-        else:
-            return dict(name=self.name,
-                        number=self.number,
-                        secret_word=self.secret_word,
-                        target_number=self.target.number,
-                        target_name=self.target.number,
-                        kill_count=self.kill_count)
+        return dict(name=self.name,
+                    number=self.number,
+                    secret_word=self.secret_word,
+                    target_number=self.target.number,
+                    target_name=self.target.number)
 
     def kills(killer, target):
-        kill.target = target.target
-        del target
+        killer.target = target.target
+        target.delete()
 
     def getGame(self):
-        return Games.GamesByUserNumber[self.number]
+        return Game.GamesByUserNumber[self.number]
 
-    def __del__(self):
+    def delete(self):
         self.getGame().deleteUser(self)
-    

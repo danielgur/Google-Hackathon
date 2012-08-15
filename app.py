@@ -46,7 +46,7 @@ def receiveSMS():
                 winners = ', '.join(users)
                 for number, user in game.deadUsers:
                     sendSMS(user.number, "Loser. Congratulate these bad boys: " + winners)
-                del game
+                game.delete()
                 return 'ok'
         
     return sendRulesSMS(killers_number)
