@@ -10,223 +10,127 @@
 
 import json
 import logging
+import models
 import os
-import random
-import twilio.twiml
+import twilio
+import utils
 
-from flask import Flask, request, render_template, redirect, url_for
-from flask import send_from_directory
-from User import User
-from twilio.rest import TwilioRestClient
+from flask import Flask
+from flask import request, render_template, redirect, send_from_directory
 
-client = TwilioRestClient()
+games_to_delete = set()
 
 app = Flask(__name__)
 app.debug = True
-
 
 @app.route('/favicon.ico')
 def favicon():
     return send_from_directory(os.path.join(app.root_path, 'static'),
                                'favicon.ico', mimetype='image/vnd.microsoft.icon')
-Users = {}
-
-UsersKilled = {}
-
-ShuffledUsers = []
-
-Words = {"blue": False,
-         "robust": False,
-         "scalable": False,
-         "dynamic": False,
-         "red": False,
-         "amigo": False,
-         "respect": False,
-         "alfred": False,
-         "beast": False,
-         "welissa": False,
-         "yoyo": False,
-         "quique": False,
-         "trivial": False,
-         "regina": False,
-         "sad": False,
-         "day": False,
-         "pedrophile": False,
-         "insanity": False,
-         "dig": False,
-         "hendo": False,
-         "boy": False,
-         "bru": False,
-         "shelton": False,
-         "harvey": False,
-         "g4lint": False,
-         "omg": False,
-         "potter": False,
-         "harry": False,
-         "dumbledore": False,
-         "gatsby": False,
-         "google": False,
-         "bigtable": False,
-         "megastore": False,
-         "git": False,
-         "sweet": False,
-         "cheese": False,
-         "gouda": False,
-         "ferr": False,
-         "china": False}
 
 @app.route('/kill/', methods=['GET', 'POST'])
 def receiveSMS():
-    global Users
-    # Get info of received SMS
-    # text_received = request.values.get('Body', '')
     word = request.values.get('Body', '').strip().lower()
-    sender_number = int(request.values.get('From', ''))
+    killers_number = int(request.values.get('From', ''))
+    game = models.Game.GamesByUserNumber[killers_number]
 
-    # If user died, make necessary updates
-    """if text_received.strip().lower() == 'dead':
-        dead_user = Users[sender_number]
-        updateTarget(dead_user)
-        
-        # Add dead user to UsersKilled
-        # Delete dead user from current players
-        UsersKilled[sender_number] = dead_user 
-        del Users[sender_number]
-        for i, suser in enumerate(ShuffledUsers):
-            if suser.number == dead_user.number:
-	            del ShuffledUsers[i]
-        message = "you've been removed from the game.. sucker."
-        sendSMS(sender_number, message)"""
-    if not Words.has_key(word):
-        sendSMS(sender_number, "the fuck broah. follow the rules")
-    else:
-        killer = Users[sender_number]
-        target = Users[killer.target_number]
-        if not word == target.secret_word:
-            sendSMS(sender_number, "the fuck broah. follow the rules")
-        else:
-            killer.target_name = target.target_name
-            killer.target_number = target.target_number
-            UsersKilled[target.number] = target
-            del Users[target.number]
-            for i, suser in enumerate(ShuffledUsers):
-                if suser.number == target.number:
-	                 del ShuffledUsers[i]
-            message = "you've been removed from the game.. sucker."
-            sendSMS(target.number, message)
-            if len(Users.keys()) > 2:
-                sendSMS(killer.number, getPartialCongrats() + "Your new target is: " + killer.target_name)
+    users = game.getUsersByNumber()
+    killer = users[killers_number]
+    killer.messages.append(killer.name + ": " + word)
+    if word in utils.WORDS:
+        target = killer.target
+        if word == target.secret_word:
+            killer.kills(target)
+            if len(users) > 2:
+                return utils.sendSMS(killers_number, utils.getPartialCongrats() + 
+                               " Your new target is: " + killer.target.name)
             else:
-                Users = {}
-                winners = ''
-                for user in Users.values():
-                    sendSMS(user.number, "You freakin WON! Now you have the flower powers.")
-                    winners += user.name + ' '
-                for user in UsersKilled.values():
-                    sendSMS(user.number, "Loser. Congratulate these bad boys: " + winners)
-
-    return 'ok' 
-
-# Deprecated
-def updateTarget(user_killed):
-    for user in Users.values():
-        if user.target_number == user_killed.number:
-            user.target_number = user_killed.target_number  
-            user.target_name = user_killed.target_name
-            sendSMS(user.number, getPartialCongrats() + "Your new target is: " + user.target_name)
-            break
+                for number, user in users.iteritems():
+                    utils.sendSMS(number, "You freakin WON! Now you have the flower powers.")
+                winners = ', '.join(user.name for user in users.values())
+                for user in game.deadUsers():
+                    utils.sendSMS(user.number, "Loser. Congratulate these bad boys: " + winners)
+                games_to_delete.add(game)
+                return 'ok'
+        
+    return utils.sendRulesSMS(killers_number)
 
 
-def getPartialCongrats():
-    possibleMsgs = ["Nice kill. ",
-                    "Great hunt. ",
-                    "Get more blood on those hands. ",
-                    "Headshot. ",
-                    "MOFO is dead. ",
-                    "Dead. ",
-                    "Good work you beast. "]
-
-    return random.choice(possibleMsgs) 
-
-
-def sendSMS(phone_num, text):
-    text = "\n\n" + text
-    from_="+19492163884"
-    logging.warn('sending a message from %s to %s with content: %s' % (
-            from_, phone_num,  text))
-            
-    message = client.sms.messages.create(to=phone_num, from_=from_,
-                                         body=text)
-    return message
-
-
-def gaming():
-    return bool(Users)
-
-
-@app.route('/', methods=['GET'])
-def index():
-    if not gaming():
-        return render_template('form.html')
-    else:
-        return render_template('dashboard.html')
+@app.route('/', methods=["GET"])
+def createGame():
+    return render_template('create_game.html', games=models.Game.GamesByGameName.values())
 
 
 @app.route('/startgame', methods=['POST'])
-def poststartgame():
+def startGame():
+    global games_to_delete
+    for game in games_to_delete:
+        game.delete()
+    games_to_delete = set()
+    game = models.Game()
     data = request.values['data']
-
-    global Users
-    global ShuffledUsers
-    Users = {}
-    for line in data.split('\n'):
-        line = line.strip()
-        if not line:
-            continue
-        number, name = line.split(',')
-        name, number = name.strip(), int(number.strip())
-        user = User(name=name, number=number)
-        Users[number] = user
-
-    users_list = list(Users.values())
-    # This makes sure that there are more secret words than users
-    # TODO(esadac): make this more reliable, get more words or something.
-    if len(users_list) <= len(Words.values()):
-        for user in users_list[:]:
+    users = utils.parseUsers(data)
+    bad_users = set()
+    for user in users:
+        if user.isInGame():
+            utils.sendSMS(user.number, "Dude you are already in a game!")
+            logging.warn("User: {0} {1} is already in a game!".format(
+                    user.name, user.number))
+            bad_users.add(user)
+        else:
             try:
-                sendSMS(user.number,
-                       "Get ready. It's about to get real. Your target will be sent shortly.")
-            except: 
-                logging.warn("Catching exception for " + str(user.number) + " bout to delete...")
-                del Users[user.number]
-                users_list.remove(user)
-   
-        random.shuffle(users_list)
-        ShuffledUsers = users_list
-        for i, user in enumerate(users_list):
-            user.target_number = users_list[ (i + 1) % len(users_list)].number
-            user.target_name = users_list[ (i + 1) % len(users_list)].name
-            user.secret_word = getSecretWord()
+                utils.sendSMS(user.number, "Get ready. It's about to get real. "
+                              "Your target will be sent shortly!")
+            except twilio.TwilioRestException:
+                logging.warn("User: {0} has an bad number: {1}".format(
+                        user.name, user.number))
+                bad_users.add(user)
+    
+    for bad_user in bad_users:
+        users.remove(bad_user)
 
-        for i, user in enumerate(users_list):
-            sendSMS(user.number,
-                    "Welcome to the game, your target is: " + Users[user.target_number].name + ". Your secret word is: " + Users[user.number].secret_word)
-        
-    return 'ok'
+    if len(users) <= 2:
+        message = "Sorry, there are not enough valid players. The game cannot start."
+        for user in users:
+            utils.sendSMS(user.number, message)
+        return message
 
-# A word is true if it has been used before.
-def getSecretWord():
-    word = random.choice(Words.keys())
-    while Words[word] == True:
-        word = random.choice(Words.keys())
-    Words[word] = True
-    return word
+    else:
+        for user in users:
+            game.addUser(user)
+        game.assignTargetsAndWords()
+        for user in users:
+            message = ("Welcome to the game, your target is: {0}. "
+                       "Your secret word is: {1}".format(user.target.name, user.secret_word))
+            utils.sendSMS(user.number, message)
 
-@app.route('/gamestatus', methods=['GET'])
-def gamestatus():
-    global ShufflesUsers
-    users = [user.serialize() for user in ShuffledUsers]
-    return json.dumps(users)
+        testing = any(user.number <= 0 for user in users)
+        if testing:
+            return "/test/" + game.name
+        else:
+            return "/games/" + game.name
+
+
+@app.route('/gamestatus/<game_name>', methods=['GET'])
+def gameStatus(game_name):
+    game = models.Game.getGame(game_name)
+    return json.dumps({'aliveUsers': [user.serialize() for user in 
+                                      models.Game.getGame(game_name).getKillList()],
+                       'deadUsers': [user.serialize() for user in
+                                     models.Game.getGame(game_name).deadUsers()]})
+                           
+                           
+                           
+                           
+
+@app.route('/games/<game_name>')
+def dashboard(game_name):
+    return render_template('dashboard.html', game_name=game_name)
+
+@app.route('/test/<game_name>')
+def test_dashboard(game_name):
+    return render_template('testdashboard.html', game_name=game_name)
+
 
 if __name__ == '__main__':
     # Bind to PORT if defined, otherwise default to 5000.

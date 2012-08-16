@@ -1,0 +1,12 @@
+<html>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+  <script type="text/javascript" src=" http://www.getbridge.com/js/bridge.min.js "></script>
+  <script>
+	var gameName = "{{ game_name }}";
+  </script>
+  <script src="{{ url_for('static', filename='testdashboard.js') }}"></script>
+  <body>
+	<code><a href="http://localhost:5000">create game</a></code><br/>
+	<code><a href="http://localhost:5000/games/{{ game_name }}">other dashboard</a></code>
+  </body>
+</html>
